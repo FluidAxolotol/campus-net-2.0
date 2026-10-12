@@ -1,0 +1,262 @@
+/* ===== 0. 全局基础样式 ===== */
+
+/* * 选中页面上所有元素，把默认的外边距/内边距清零，
+   并让盒模型按 border-box 计算（宽度包含 padding 和 border，更好算） */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+/* body 是整个页面的"画布"，在这里定全局字体、背景色、文字颜色 */
+body {
+  font-family: "Microsoft YaHei", "PingFang SC", sans-serif;
+  background-color: #f5f7fa;   /* 浅灰蓝背景，让白色卡片能"浮"出来 */
+  color: #333333;              /* 正文不用纯黑，深灰色看着舒服 */
+  line-height: 1.6;            /* 行高 1.6 倍，中文阅读更透气 */
+}
+
+/* 全站链接的默认样式：去掉下划线，用主题蓝 */
+a {
+  color: #2f6fe4;
+  text-decoration: none;
+}
+/* :hover 表示鼠标悬停时 */
+a:hover {
+  text-decoration: underline;
+}
+
+/* ===== 1. 顶部快捷栏 ===== */
+.top-bar {
+  display: flex;             /* Flex 布局：让 Logo、导航、搜索框横向排开 */
+  align-items: center;       /* 垂直方向居中对齐 */
+  gap: 24px;                 /* 子元素之间的间距，替代一个个写 margin */
+  background-color: #ffffff;
+  padding: 12px 32px;        /* 上下 12px，左右 32px（盒模型的 padding） */
+  position: sticky;          /* 滚动页面时吸在顶部 */
+  top: 0;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);  /* 底部一点淡淡阴影 */
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 20px;
+  font-weight: bold;
+  color: #1a1a1a;
+}
+.logo img {
+  width: 32px;
+  height: 32px;
+}
+
+.top-bar nav {
+  display: flex;
+  gap: 16px;
+}
+/* "导航里的链接"选择器写得更具体，覆盖上面的全局 a 样式 */
+.top-bar nav a {
+  color: #333333;
+  font-weight: 500;
+}
+.top-bar nav a:hover {
+  color: #2f6fe4;
+}
+
+.search-box {
+  display: flex;
+  margin-left: auto;         /* 关键：把搜索框（和它后面的登录按钮）推到最右边 */
+}
+.search-box input {
+  width: 260px;
+  padding: 8px 12px;
+  border: 1px solid #d0d7e2;
+  border-right: none;                    /* 和按钮拼成一体 */
+  border-radius: 8px 0 0 8px;            /* 只圆左边的角 */
+  outline: none;                         /* 去掉点击时的默认黑框 */
+}
+.search-box input:focus {                /* 输入框获得焦点时高亮 */
+  border-color: #2f6fe4;
+}
+.search-box button {
+  padding: 8px 16px;
+  border: none;
+  border-radius: 0 8px 8px 0;            /* 只圆右边的角 */
+  background-color: #2f6fe4;
+  color: #ffffff;
+  cursor: pointer;                       /* 鼠标放上去变小手 */
+}
+
+.btn-login {
+  background-color: #2f6fe4;
+  color: #ffffff;
+  padding: 8px 16px;
+  border-radius: 8px;        /* 圆角按钮 */
+}
+.btn-login:hover {
+  background-color: #2559c0; /* 悬停时颜色加深，给人"能点"的感觉 */
+  text-decoration: none;
+}
+
+/* ===== 2. 主体区域通用样式 ===== */
+main {
+  max-width: 1080px;         /* 内容最宽 1080px，大屏幕上不会拉得太宽 */
+  margin: 24px auto;         /* 上下 24px，左右 auto = 水平居中 */
+  padding: 0 16px;
+  display: flex;
+  flex-direction: column;    /* 各区块从上到下排 */
+  gap: 24px;
+}
+
+/* 每个区块都是一张白色圆角卡片 */
+section {
+  background-color: #ffffff;
+  border-radius: 12px;
+  padding: 20px 24px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+/* 区块标题：左侧加一根蓝色竖条 */
+h2 {
+  font-size: 18px;
+  padding-left: 10px;
+  border-left: 4px solid #2f6fe4;
+  margin-bottom: 16px;
+}
+
+/* ===== 3. 公告区 ===== */
+.notice ul {
+  list-style: none;          /* 去掉 ul 默认的黑点 */
+}
+.notice li {
+  display: flex;
+  justify-content: space-between;  /* 标题靠左、日期靠右 */
+  padding: 6px 0;
+  border-bottom: 1px dashed #e5eaf2;  /* 虚线分隔线 */
+}
+.notice li:last-child {
+  border-bottom: none;       /* 最后一行不需要分隔线 */
+}
+.notice .date {
+  color: #999999;
+  font-size: 13px;
+}
+
+/* ===== 4. 账号设置快捷入口 ===== */
+.account-quick {
+  display: flex;
+  gap: 16px;
+}
+.account-quick a {
+  background-color: #eef3ff;         /* 淡蓝色胶囊按钮 */
+  color: #2f6fe4;
+  padding: 8px 20px;
+  border-radius: 999px;              /* 999px 圆角 = 胶囊形状 */
+}
+.account-quick a:hover {
+  background-color: #dbe7ff;
+  text-decoration: none;
+}
+
+/* ===== 5. 校园社区动态 ===== */
+.card-list {
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;           /* 屏幕窄时卡片自动换行 */
+}
+.card {
+  flex: 1;                   /* 三张卡片平分一行 */
+  min-width: 220px;          /* 但最小不能小于 220px，小了就换行 */
+  border: 1px solid #e5eaf2;
+  border-radius: 10px;
+  padding: 16px;
+}
+.card h3 {
+  font-size: 15px;
+  margin: 8px 0 4px;
+}
+.card p {
+  font-size: 13px;
+  color: #666666;
+}
+.card .meta {
+  display: block;
+  margin-top: 8px;
+  font-size: 12px;
+  color: #999999;
+}
+
+/* ===== 6. 通用小标签（分类 tag） ===== */
+.tag {
+  display: inline-block;
+  font-size: 12px;
+  padding: 2px 8px;
+  border-radius: 4px;
+  color: #ffffff;
+  white-space: nowrap;       /* 标签文字不换行 */
+}
+/* 不同分类配不同颜色，一眼区分 */
+.tag-ershou  { background-color: #e67e22; }  /* 二手交易：橙 */
+.tag-shiwu   { background-color: #e74c3c; }  /* 失物招领：红 */
+.tag-xuexi   { background-color: #16a085; }  /* 学习交流：绿 */
+.tag-jiaowu  { background-color: #2f6fe4; }  /* 教务学习：蓝 */
+.tag-shenghuo{ background-color: #8e44ad; }  /* 生活服务：紫 */
+.tag-jiaofei { background-color: #d4a017; }  /* 缴费报销：金黄 */
+.tag-changguan{ background-color: #2980b9; } /* 场馆预约：深蓝 */
+
+/* ===== 7. 企微路径导航精选 ===== */
+.path-list {
+  list-style: none;
+}
+.path-list li {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 0;
+  border-bottom: 1px dashed #e5eaf2;
+}
+.path-list li:last-child {
+  border-bottom: none;
+}
+.path-list .name {
+  font-weight: 600;
+  white-space: nowrap;
+}
+.path-list .steps {
+  color: #888888;
+  font-size: 13px;
+  overflow: hidden;
+  text-overflow: ellipsis;   /* 路径太长时显示省略号 */
+  white-space: nowrap;
+}
+.path-list .hot {
+  margin-left: auto;         /* 热度推到最右边 */
+  color: #e67e22;
+  font-size: 13px;
+  white-space: nowrap;
+}
+
+/* ===== 8. 页脚 ===== */
+footer {
+  margin-top: 24px;
+  padding: 32px 16px;
+  background-color: #ffffff;
+  text-align: center;
+  color: #999999;
+  font-size: 13px;
+}
+
+/* ===== 9. 响应式：屏幕太窄时调整布局 ===== */
+@media (max-width: 720px) {
+  .top-bar {
+    flex-wrap: wrap;                 /* 顶栏放不下就换行 */
+  }
+  .search-box {
+    margin-left: 0;                  /* 搜索框不再顶到右边 */
+    width: 100%;                     /* 占满一整行 */
+  }
+  .search-box input {
+    width: 100%;                     /* 输入框跟着变宽 */
+  }
+}
