@@ -1,0 +1,516 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>后台工作台 · 校内网 2.0 学习版</title>
+  <link rel="stylesheet" href="assets/tokens.css">
+  <style>
+    /* ============================================================
+       基础
+       ============================================================ */
+    body {
+      margin: 0;
+      font-family: var(--font);
+      background: var(--bg);
+      color: var(--ink);
+      font-size: 14px;
+      line-height: 1.6;
+    }
+
+    /* ============================================================
+       深色顶栏
+       ============================================================ */
+    .top {
+      height: var(--nav-h);
+      background: var(--ink);
+      color: #fff;
+      display: flex;
+      align-items: center;
+      padding: 0 24px;
+      gap: 16px;
+    }
+
+    .top .logo {
+      font-weight: 700;
+      font-size: 15px;
+      display: flex;
+      gap: 8px;
+      align-items: center;
+    }
+
+    .top .logo .mark {
+      width: 26px;
+      height: 26px;
+      border-radius: 6px;
+      background: var(--brand);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
+    }
+
+    .top .env {
+      font-size: 11px;
+      background: rgba(255, 255, 255, .14);
+      padding: 2px 10px;
+      border-radius: var(--r-pill);
+    }
+
+    .top .who {
+      margin-left: auto;
+      font-size: 12px;
+      opacity: .7;
+      cursor: pointer;
+      /* 原来是 span，现在改成退出的 <a>，重置链接默认样式 */
+      color: inherit;
+      text-decoration: none;
+    }
+
+    /* ============================================================
+       两栏布局：左侧导航 + 右侧内容
+       ============================================================ */
+    .wrap {
+      max-width: var(--max-w);
+      margin: 0 auto;
+      padding: 20px 28px 60px;
+      display: grid;
+      grid-template-columns: 190px 1fr;
+      gap: 22px;
+    }
+
+    .side {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .side a {
+      padding: 9px 14px;
+      border-radius: var(--r-sm);
+      color: var(--ink-2);
+      text-decoration: none;
+      font-size: 13px;
+      display: flex;
+      gap: 8px;
+      align-items: center;
+    }
+
+    .side a.on {
+      background: var(--brand-soft);
+      color: var(--brand);
+      font-weight: 600;
+    }
+
+    .side .cnt {
+      margin-left: auto;
+      font-size: 10px;
+      background: var(--danger);
+      color: #fff;
+      border-radius: var(--r-pill);
+      padding: 0 6px;
+    }
+
+    /* ============================================================
+       KPI 指标卡
+       ============================================================ */
+    .kpis {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 14px;
+      margin-bottom: 18px;
+    }
+
+    .kpi {
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: var(--r-md);
+      padding: 14px 18px;
+    }
+
+    .kpi .v {
+      font-size: 22px;
+      font-weight: 700;
+    }
+
+    .kpi .v em {
+      font-style: normal;
+      font-size: 11px;
+      color: var(--danger);
+      background: #FDECEC;
+      border-radius: var(--r-pill);
+      padding: 1px 8px;
+      margin-left: 6px;
+      vertical-align: 3px;
+    }
+
+    .kpi .k {
+      font-size: 12px;
+      color: var(--ink-3);
+      margin-top: 2px;
+    }
+
+    /* ============================================================
+       面板
+       ============================================================ */
+    .panel {
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: var(--r-md);
+      margin-bottom: 18px;
+      overflow: hidden;
+    }
+
+    .panel .h {
+      padding: 13px 18px;
+      border-bottom: 1px solid var(--line);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .panel .h b {
+      font-size: 14px;
+    }
+
+    .panel .h .more {
+      margin-left: auto;
+      font-size: 12px;
+      color: var(--brand);
+      cursor: pointer;
+    }
+
+    .panel-note {
+      font-size: 11.5px;
+      color: var(--ink-3);
+    }
+
+    /* AI 起草行 */
+    .airow {
+      background: #FAF9FF;
+      border-bottom: 1px solid #E4E0F3;
+      padding: 12px 18px;
+      display: flex;
+      gap: 14px;
+      align-items: center;
+    }
+
+    .airow .ico {
+      font-size: 18px;
+    }
+
+    .airow .t {
+      flex: 1;
+      font-size: 12.5px;
+      color: var(--ink-2);
+    }
+
+    .airow .t b {
+      display: block;
+      font-size: 13.5px;
+      color: #534AB7;
+    }
+
+    .airow input {
+      flex: 0 0 200px;
+      height: 34px;
+      border: 1px solid #D9D4F5;
+      border-radius: 8px;
+      padding: 0 12px;
+      font-size: 12.5px;
+      outline: none;
+    }
+
+    .airow button {
+      height: 34px;
+      padding: 0 14px;
+      border: none;
+      border-radius: 8px;
+      background: #7F77DD;
+      color: #fff;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    /* ============================================================
+       表格
+       ============================================================ */
+    .table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 12.5px;
+    }
+
+    .table th {
+      background: #FAFBFC;
+      text-align: left;
+      font-size: 11px;
+      color: var(--ink-2);
+      padding: 9px 14px;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .table td {
+      padding: 10px 14px;
+      border-bottom: 1px dashed var(--line);
+    }
+
+    /* 每个 tbody 的最后一行去掉下边框 */
+    .table tr:last-child td {
+      border-bottom: none;
+    }
+
+    /* ============================================================
+       状态与操作
+       ============================================================ */
+    .st {
+      font-size: 10.5px;
+      padding: 1px 9px;
+      border-radius: var(--r-pill);
+      white-space: nowrap;
+    }
+
+    .st-ok   { background: #E9F7EF; color: var(--good); }
+    .st-warn { background: #FDF5E6; color: var(--warn); }
+    .st-wait { background: #F1EFE8; color: var(--ink-2); }
+
+    .op {
+      font-size: 11.5px;
+      cursor: pointer;
+      color: var(--ink-3);
+      margin-right: 10px;
+    }
+
+    .op.ok  { color: var(--good); }
+    .op.del { color: var(--danger); }
+
+    /* ============================================================
+       后台口令表单
+       ============================================================ */
+    .pwd-form {
+      padding: 14px 18px;
+      display: flex;
+      gap: 12px;
+      align-items: flex-end;
+    }
+
+    .pwd-field {
+      flex: 1;
+    }
+
+    .pwd-field label {
+      display: block;
+      font-size: 12px;
+      color: var(--ink-2);
+      margin-bottom: 6px;
+    }
+
+    .pwd-input {
+      width: 100%;
+      height: 38px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 0 12px;
+      font-size: 13px;
+      outline: none;
+    }
+
+    .pwd-button {
+      height: 38px;
+      padding: 0 18px;
+      border: none;
+      border-radius: 8px;
+      background: var(--ink);
+      color: #fff;
+      font-size: 12.5px;
+      cursor: pointer;
+    }
+
+    .pwd-hint {
+      padding: 0 18px 14px;
+      font-size: 11.5px;
+      color: var(--ink-3);
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ===== 管理后台顶栏 ===== -->
+  <header class="top">
+    <div class="logo">
+      <div class="mark" aria-hidden="true">校</div>
+      管理后台
+    </div>
+    <span class="env">🏫 中山大学 · 独立站点 v1</span>
+    <!-- 退出登录：回到管理后台登录页 -->
+    <a class="who" href="admin-login.html">admin · 退出</a>
+  </header>
+
+  <!-- ===== 后台布局 ===== -->
+  <div class="wrap">
+
+    <nav class="side" aria-label="后台导航">
+      <a href="#" class="on">📊 工作台</a>
+      <a href="#">🧭 应用与路径</a>
+      <a href="#">📚 真题审核 <span class="cnt">3</span></a>
+      <a href="#">💬 社区管理 <span class="cnt">5</span></a>
+      <a href="#">🚨 纠错反馈 <span class="cnt">2</span></a>
+      <a href="#">🗑️ 回收站</a>
+    </nav>
+
+    <main>
+
+      <!-- KPI 指标 -->
+      <section class="kpis" aria-label="关键指标">
+        <article class="kpi">
+          <div class="v">30</div>
+          <div class="k">本校工具 · 企微导航条目</div>
+        </article>
+        <article class="kpi">
+          <div class="v">587</div>
+          <div class="k">本校真题</div>
+        </article>
+        <article class="kpi">
+          <div class="v">3<em>待审</em></div>
+          <div class="k">待审核真题</div>
+        </article>
+        <article class="kpi">
+          <div class="v">1,248</div>
+          <div class="k">本校社区帖子</div>
+        </article>
+      </section>
+
+      <!-- AI 起草 -->
+      <section class="panel" aria-labelledby="ai-draft-title">
+        <div class="h">
+          <b id="ai-draft-title">✨ AI 起草办事指引</b>
+          <span class="panel-note">草稿生成后仍需人工修订发布</span>
+        </div>
+        <div class="airow">
+          <div class="ico" aria-hidden="true">🪄</div>
+          <div class="t">
+            <b>输入功能名，AI 自动生成操作步骤草稿</b>
+            例如「奖学金申请」——AI 生成初稿，你改细节，省一半录入时间
+          </div>
+          <input type="text" aria-label="功能名" placeholder="如：奖学金申请">
+          <button type="button">生成草稿</button>
+        </div>
+      </section>
+
+      <!-- 待审核真题 -->
+      <section class="panel" aria-labelledby="pending-title">
+        <div class="h">
+          <b id="pending-title">📚 待审核真题</b>
+          <span class="more">全部 ›</span>
+        </div>
+        <table class="table">
+          <thead>
+            <tr>
+              <th>文件</th>
+              <th>AI 识别</th>
+              <th>上传者</th>
+              <th>时间</th>
+              <th>操作</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><b>线性代数_2025秋.pdf</b></td>
+              <td>线性代数 · 2025 秋 · 期末</td>
+              <td>@小张</td>
+              <td>09-24</td>
+              <td>
+                <span class="op ok">✓ 通过</span>
+                <span class="op del">✗ 驳回</span>
+              </td>
+            </tr>
+            <tr>
+              <td><b>概率论_2025春.jpg</b></td>
+              <td>概率论 · 2025 春 · 期末</td>
+              <td>@匿名</td>
+              <td>09-23</td>
+              <td>
+                <span class="op ok">✓ 通过</span>
+                <span class="op del">✗ 驳回</span>
+              </td>
+            </tr>
+            <tr>
+              <td><b>大物_2024秋.pdf</b></td>
+              <td>⚠️ 置信度低：大学物理 · 2024 秋</td>
+              <td>@阿华</td>
+              <td>09-23</td>
+              <td>
+                <span class="op ok">✓ 通过</span>
+                <span class="op del">✗ 驳回</span>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </section>
+
+      <!-- 纠错反馈 -->
+      <section class="panel" aria-labelledby="feedback-title">
+        <div class="h">
+          <b id="feedback-title">🚨 纠错反馈</b>
+          <span class="more">全部 ›</span>
+        </div>
+        <table class="table">
+          <thead>
+            <tr>
+              <th>条目</th>
+              <th>反馈</th>
+              <th>状态</th>
+              <th>操作</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><b>宿舍设施报修</b></td>
+              <td>入口改到「后勤服务」了</td>
+              <td><span class="st st-warn">待处理</span></td>
+              <td>
+                <span class="op ok">✓ 已修</span>
+                <span class="op">忽略</span>
+              </td>
+            </tr>
+            <tr>
+              <td><b>四六级成绩单打印</b></td>
+              <td>第 2 步菜单名变了</td>
+              <td><span class="st st-wait">已读</span></td>
+              <td>
+                <span class="op ok">✓ 已修</span>
+                <span class="op">忽略</span>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </section>
+
+      <!-- 后台口令管理 -->
+      <section class="panel" aria-labelledby="pwd-title">
+        <div class="h">
+          <b id="pwd-title">🔐 后台口令管理</b>
+          <span class="panel-note">管理后台唯一的“账号”设置</span>
+        </div>
+
+        <form class="pwd-form" action="#">
+          <div class="pwd-field">
+            <label for="current-pwd">当前口令</label>
+            <input id="current-pwd" class="pwd-input" type="password">
+          </div>
+          <div class="pwd-field">
+            <label for="new-pwd">新口令</label>
+            <input id="new-pwd" class="pwd-input" type="password">
+          </div>
+          <button class="pwd-button" type="submit">更新口令</button>
+        </form>
+
+        <div class="pwd-hint">口令更新后立即生效，请同步告知其他项目组成员。</div>
+      </section>
+
+    </main>
+  </div>
+
+</body>
+</html>

@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>管理后台登录 · 校内网 2.0 学习版</title>
+  <link rel="stylesheet" href="assets/tokens.css">
+  <style>
+    /* ============================================================
+       基础：整页垂直水平居中（和登录页同一招）
+       min-height:100vh 占满一屏；flex 两个 center 分别管横竖
+       ============================================================ */
+    body {
+      margin: 0;
+      font-family: var(--font);
+      background: var(--bg);
+      color: var(--ink);
+      font-size: 14px;
+      line-height: 1.6;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    /* ============================================================
+       登录卡片
+       ============================================================ */
+    .card {
+      width: 400px;
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: var(--r-lg);
+      padding: 36px 40px;
+      box-shadow: var(--shadow);
+      /* 防止内容过宽时撑破卡片 */
+      box-sizing: border-box;
+    }
+
+    .lock {
+      text-align: center;
+      font-size: 26px;
+      margin-bottom: 8px;
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-weight: 700;
+      font-size: 17px;
+      justify-content: center;
+      margin-bottom: 6px;
+    }
+
+    .logo .mark {
+      width: 32px;
+      height: 32px;
+      border-radius: var(--r-sm);
+      background: var(--brand);
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 15px;
+    }
+
+    .sub {
+      text-align: center;
+      color: var(--ink-3);
+      font-size: 12.5px;
+      margin-bottom: 26px;
+    }
+
+    /* ============================================================
+       表单字段
+       ============================================================ */
+    .field {
+      margin-bottom: 16px;
+    }
+
+    .field label {
+      display: block;
+      font-size: 12.5px;
+      color: var(--ink-2);
+      margin-bottom: 6px;
+      font-weight: 600;
+    }
+
+    /* 必填星号用红色 */
+    .field .req {
+      color: var(--danger);
+    }
+
+    /* 下拉框和输入框统一规格：100% 宽 + 44px 高 */
+    .field select,
+    .field input {
+      width: 100%;
+      height: 44px;
+      border: 1px solid var(--line);
+      border-radius: var(--r-md);
+      padding: 0 14px;
+      font-size: 14px;
+      outline: none;
+      background: #fff;
+      box-sizing: border-box; /* 让 padding 算在 width 里，不会超宽 */
+      color: var(--ink);
+      font-family: inherit;
+    }
+
+    /* 聚焦时边框变品牌色，提示"正在输入这里" */
+    .field select:focus,
+    .field input:focus {
+      border-color: var(--brand);
+    }
+
+    /* 登录按钮：整宽主按钮 */
+    .btn {
+      width: 100%;
+      height: 46px;
+      border: none;
+      border-radius: var(--r-md);
+      background: var(--brand);
+      color: #fff;
+      font-size: 14.5px;
+      font-weight: 600;
+      cursor: pointer;
+      margin-top: 6px;
+      font-family: inherit;
+      display: inline-block;   /* 让 a 链接长得像按钮 */
+      text-align: center;
+      text-decoration: none;
+      line-height: 46px;       /* 单行文字垂直居中 */
+      box-sizing: border-box;
+    }
+
+    .btn:hover {
+      background: var(--brand-deep);
+    }
+
+    /* ============================================================
+       说明条：后台"按学校隔离"是这个页面最重要的信息
+       ============================================================ */
+    .note {
+      margin-top: 18px;
+      background: var(--brand-soft);
+      border-radius: var(--r-sm);
+      padding: 10px 14px;
+      font-size: 12px;
+      color: #1B4DD8;
+      line-height: 1.6;
+    }
+
+    /* 返回前台的小链接 */
+    .back {
+      text-align: center;
+      margin-top: 14px;
+      font-size: 12px;
+    }
+
+    .back a {
+      color: var(--ink-3);
+      text-decoration: none;
+    }
+
+    .back a:hover {
+      color: var(--brand);
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ===== 居中卡片：锁图标 → 标题 → 表单 → 说明 ===== -->
+  <main class="card">
+
+    <div class="lock" aria-hidden="true">🔐</div>
+    <div class="logo">
+      <span class="mark" aria-hidden="true">校</span>
+      校内网 2.0
+    </div>
+    <p class="sub">管理后台 · 独立入口 · 按学校隔离</p>
+
+    <form action="admin-console.html">
+      <!-- 学校下拉：登录哪所学校就进哪所的后台 -->
+      <div class="field">
+        <label for="school">学校 <span class="req" aria-hidden="true">*</span></label>
+        <select id="school" name="school">
+          <option>🏫 中山大学</option>
+          <option>🏫 华南理工大学</option>
+          <option>🏫 哈尔滨工业大学（深圳）</option>
+        </select>
+      </div>
+
+      <!-- 管理口令：type=password 输入内容显示为圆点 -->
+      <div class="field">
+        <label for="password">管理口令</label>
+        <input type="password" id="password" name="password" placeholder="该学校的管理口令">
+      </div>
+
+      <!-- 用 <a> 而不是 <button>：静态页面直接跳到工作台 -->
+      <a class="btn" href="admin-console.html">进入「中山大学」后台</a>
+    </form>
+
+    <div class="note">
+      ⚠️ 后台数据按学校隔离：登录时选哪所学校，进入的就是那所学校的内容管理（工具/真题/社区/纠错）。各校口令独立，互不相通。<br>
+      v1 为固定口令方案（无账号体系）；口令由各校项目组内部流转。
+    </div>
+
+    <p class="back"><a href="index.html">‹ 返回前台首页</a></p>
+
+  </main>
+
+</body>
+</html>

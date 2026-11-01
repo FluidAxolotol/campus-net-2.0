@@ -1,0 +1,514 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>应用中心 · 校内网 2.0 学习版</title>
+  <link rel="stylesheet" href="assets/tokens.css">
+  <style>
+    /* ============================================================
+       基础
+       ============================================================ */
+    body {
+      margin: 0;
+      font-family: var(--font);
+      background: var(--bg);
+      color: var(--ink);
+      font-size: 14px;
+      line-height: 1.6;
+    }
+
+    /* ============================================================
+       顶部导航
+       ============================================================ */
+    .nav {
+      height: var(--nav-h);
+      background: var(--card);
+      border-bottom: 1px solid var(--line);
+      display: flex;
+      align-items: center;
+      padding: 0 32px;
+      gap: 26px;
+    }
+
+    /* .nav .logo 比 .nav a 优先级高，避免字号/颜色被覆盖 */
+    .nav .logo {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-weight: 700;
+      font-size: 16px;
+      color: var(--ink);
+      text-decoration: none;
+    }
+
+    .logo .mark {
+      width: 28px;
+      height: 28px;
+      border-radius: var(--r-sm);
+      background: var(--brand);
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+    }
+
+    .nav a {
+      color: var(--ink-2);
+      text-decoration: none;
+    }
+
+    .nav a.on {
+      color: var(--brand);
+      font-weight: 600;
+    }
+
+    .search {
+      flex: 1;
+      max-width: 340px;
+      margin-left: auto;
+      position: relative;
+    }
+
+    .search input {
+      width: 100%;
+      height: 36px;
+      border-radius: var(--r-pill);
+      border: 1px solid var(--line);
+      background: var(--bg);
+      padding: 0 16px 0 40px;
+      font-size: 13px;
+      outline: none;
+    }
+
+    .search .mag {
+      position: absolute;
+      left: 14px;
+      top: 9px;
+      color: var(--ink-3);
+    }
+
+    /* 学校选择：原设计稿里是 div，这里改成 button，需要重置字体继承 */
+    .school {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-family: inherit;
+      font-size: 13px;
+      line-height: inherit;
+      color: var(--ink-2);
+      cursor: pointer;
+      padding: 7px 14px;
+      border: 1px solid var(--line);
+      border-radius: var(--r-pill);
+      background: var(--card);
+    }
+
+    /* ============================================================
+       页面布局
+       ============================================================ */
+    .wrap {
+      max-width: var(--max-w);
+      margin: 0 auto;
+      padding: 24px 32px 64px;
+    }
+
+    .pagehead {
+      display: flex;
+      align-items: baseline;
+      gap: 12px;
+      margin-bottom: 6px;
+    }
+
+    .pagehead h1 {
+      margin: 0;
+      font-size: 22px;
+    }
+
+    .pagehead .alias {
+      font-size: 13px;
+      color: var(--ink-3);
+    }
+
+    .pagesub {
+      color: var(--ink-3);
+      font-size: 13px;
+      margin: 0 0 20px;
+      display: flex;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    /* 搜索工具栏：输入框 flex:1 占满，按钮固定宽度 */
+    .toolbar {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 18px;
+    }
+
+    .toolbar .kw {
+      flex: 1;
+      height: 38px;
+      border: 1px solid var(--line);
+      border-radius: var(--r-md);
+      background: var(--card);
+      padding: 0 14px;
+      font-size: 13px;
+      outline: none;
+    }
+
+    .toolbar .btn {
+      height: 38px;
+      padding: 0 18px;
+      border: none;
+      border-radius: var(--r-md);
+      background: var(--brand);
+      color: #fff;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    .cats {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 20px;
+      flex-wrap: wrap;
+    }
+
+    .cat {
+      border: 1px solid var(--line);
+      border-radius: var(--r-pill);
+      padding: 5px 16px;
+      font-size: 13px;
+      color: var(--ink-2);
+      cursor: pointer;
+      background: var(--card);
+    }
+
+    .cat.on {
+      border-color: var(--brand);
+      color: var(--brand);
+      background: var(--brand-soft);
+      font-weight: 600;
+    }
+
+    .sec-title {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin: 4px 0 12px;
+    }
+
+    .sec-title h2 {
+      margin: 0;
+      font-size: 15px;
+    }
+
+    .sec-title .line {
+      flex: 1;
+      height: 1px;
+      background: var(--line);
+    }
+
+    .sec-title .tech {
+      font-size: 10.5px;
+      color: var(--ink-3);
+      background: #F1EFE8;
+      padding: 2px 8px;
+      border-radius: var(--r-pill);
+    }
+
+    /* ============================================================
+       工具卡片
+       ============================================================ */
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+      margin-bottom: 28px;
+    }
+
+    .app {
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: var(--r-lg);
+      padding: 20px;
+      cursor: pointer;
+      transition: .15s;
+    }
+
+    .app:hover {
+      border-color: var(--brand);
+    }
+
+    /* 整卡可点：用 <a> 把整张卡片包起来跳转详情页。
+       链接默认是蓝色 + 下划线，这里重置回卡片本来的样子 */
+    .app-link {
+      display: block;
+      color: inherit;
+      text-decoration: none;
+    }
+
+    .app .ico {
+      width: 46px;
+      height: 46px;
+      border-radius: var(--r-md);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 22px;
+      margin-bottom: 12px;
+    }
+
+    /* 图标底色：把原设计稿的行内 style 抽成类名 */
+    .ico-nav   { background: #EEF3FF; }
+    .ico-team  { background: #FBEAF0; }
+    .ico-study { background: #E9F7EF; }
+    .ico-life  { background: #FDF5E6; }
+    .ico-teal  { background: #E1F5EE; }
+    .ico-muted { background: #F1EFE8; }
+
+    .app h3 {
+      margin: 0 0 6px;
+      font-size: 15px;
+    }
+
+    .app p {
+      margin: 0 0 10px;
+      color: var(--ink-3);
+      font-size: 12.5px;
+      min-height: 38px;
+    }
+
+    .tagrow {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+
+    .tg {
+      font-size: 10.5px;
+      padding: 2px 9px;
+      border-radius: var(--r-pill);
+    }
+
+    .tg-nav   { background: #EEF3FF; color: #185FA5; }
+    .tg-team  { background: #FBEAF0; color: #993556; }
+    .tg-study { background: #E9F7EF; color: #0F9D58; }
+    .tg-life  { background: #FDF5E6; color: #C47F17; }
+    .tg-algo  { background: #F1EFE8; color: var(--ink-2); }
+    .tg-hot   { color: var(--danger); font-size: 10.5px; font-weight: 600; }
+
+    .views {
+      font-size: 11px;
+      color: var(--ink-3);
+      margin-left: auto;
+    }
+
+    /* 状态：未上线工具整体变淡 */
+    .soon {
+      opacity: .55;
+    }
+
+    .soon .coming {
+      display: inline-block;
+      margin-top: 6px;
+      font-size: 11px;
+      color: var(--warn);
+      border: 1px dashed var(--warn);
+      border-radius: var(--r-pill);
+      padding: 1px 10px;
+    }
+
+    .idea {
+      background: var(--brand-soft);
+      border: 1px dashed var(--brand);
+      border-radius: var(--r-lg);
+      padding: 16px 22px;
+      font-size: 13px;
+      color: #1B4DD8;
+      display: flex;
+      gap: 10px;
+      align-items: center;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ===== 顶部导航 ===== -->
+  <header class="site-header">
+    <nav class="nav" aria-label="主导航">
+      <a class="logo" href="index.html">
+        <span class="mark" aria-hidden="true">校</span>
+        校内网 2.0
+      </a>
+      <a href="index.html">首页</a>
+      <a href="app-center.html" class="on">应用中心</a>
+      <a href="exam-lib.html">真题库</a>
+      <a href="community.html">校园社区</a>
+
+      <div class="search">
+        <span class="mag" aria-hidden="true">⌕</span>
+        <input type="text" aria-label="搜索小工具" placeholder="搜小工具">
+      </div>
+      <button class="school" type="button">🏫 中山大学 ▾</button>
+    </nav>
+  </header>
+
+  <!-- ===== 页面内容 ===== -->
+  <main class="wrap">
+
+    <header class="pagehead">
+      <h1>应用中心</h1>
+      <span class="alias">（校园百宝箱）</span>
+    </header>
+
+    <div class="pagesub">
+      <span>学生自制小工具集散地——解决身边的具体问题</span>
+      <span>🏫 当前学校：中山大学</span>
+    </div>
+
+    <form class="toolbar" action="#">
+      <input class="kw" type="text" aria-label="搜索工具" placeholder="搜工具名，如「企微」「搭子」「空教室」">
+      <button class="btn" type="submit">搜索</button>
+    </form>
+
+    <div class="cats">
+      <div class="cat on">全部</div>
+      <div class="cat">🧭 企微导航</div>
+      <div class="cat">🤝 寻搭子</div>
+      <div class="cat">📚 学习</div>
+      <div class="cat">🏠 生活</div>
+      <div class="cat">🧮 效率</div>
+    </div>
+
+    <!-- 热门工具 -->
+    <section aria-labelledby="hot-title">
+      <div class="sec-title">
+        <h2 id="hot-title">🔥 热门工具</h2>
+        <div class="line"></div>
+        <span class="tech">排序 / Top-K</span>
+      </div>
+
+      <div class="grid">
+        <!-- 第一张卡片做成整卡链接：点击进入「学生请假申请」的路径详情页 -->
+        <a class="app-link" href="app-detail.html">
+          <article class="app">
+            <div class="ico ico-nav">🧭</div>
+            <h3>企微办事导航（中山大学）</h3>
+            <p>企微入口太多找不到？告诉你每个办事的应用入口和菜单路径，一步步走。</p>
+            <div class="tagrow">
+              <span class="tg tg-nav">企微导航</span>
+              <span class="tg tg-hot">HOT</span>
+              <span class="views">👁 2.3k</span>
+            </div>
+          </article>
+        </a>
+
+        <article class="app">
+          <div class="ico ico-team">🤝</div>
+          <h3>竞赛寻搭子</h3>
+          <p>蓝桥杯/数模/ACM 想组队？报上竞赛与方向，帮你匹配同校的潜在队友。</p>
+          <div class="tagrow">
+            <span class="tg tg-team">寻搭子</span>
+            <span class="tg tg-hot">HOT</span>
+            <span class="views">👁 1.8k</span>
+          </div>
+        </article>
+
+        <article class="app">
+          <div class="ico ico-study">🏫</div>
+          <h3>空教室查询</h3>
+          <p>输入「周三 3–4 节」，列出所有空闲教室。自习不用碰运气。</p>
+          <div class="tagrow">
+            <span class="tg tg-study">学习</span>
+            <span class="tg tg-algo">区间合并+二分</span>
+            <span class="views">👁 1.5k</span>
+          </div>
+        </article>
+
+        <article class="app">
+          <div class="ico ico-life">☔</div>
+          <h3>失物招领智能匹配</h3>
+          <p>丢了黑色雨伞？描述特征，自动匹配招领帖和保卫处记录。</p>
+          <div class="tagrow">
+            <span class="tg tg-life">生活</span>
+            <span class="tg tg-algo">编辑距离</span>
+            <span class="views">👁 986</span>
+          </div>
+        </article>
+
+        <article class="app">
+          <div class="ico ico-nav">📅</div>
+          <h3>竞赛日历</h3>
+          <p>蓝桥杯、CSP、数模的时间线一表看全，报名截止自动提醒。</p>
+          <div class="tagrow">
+            <span class="tg tg-study">学习</span>
+            <span class="views">👁 764</span>
+          </div>
+        </article>
+
+        <article class="app">
+          <div class="ico ico-teal">🧮</div>
+          <h3>绩点计算器</h3>
+          <p>输入成绩和学分，算 GPA、看排名变化，还能做"如果考好一门"的推演。</p>
+          <div class="tagrow">
+            <span class="tg tg-algo">加权排序</span>
+            <span class="views">👁 658</span>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <!-- 规划中的工具 -->
+    <section aria-labelledby="more-title">
+      <div class="sec-title">
+        <h2 id="more-title">🚧 更多工具在路上</h2>
+        <div class="line"></div>
+      </div>
+
+      <div class="grid">
+        <article class="app soon">
+          <div class="ico ico-muted">📚</div>
+          <h3>课程冲突检测</h3>
+          <p>选课前查两门课时间撞不撞车。</p>
+          <div class="tagrow">
+            <span class="tg tg-algo">区间重叠</span>
+          </div>
+          <span class="coming">规划中</span>
+        </article>
+
+        <article class="app soon">
+          <div class="ico ico-muted">🗺️</div>
+          <h3>校园最短路径</h3>
+          <p>从宿舍到教学楼哪条路最快？</p>
+          <div class="tagrow">
+            <span class="tg tg-algo">图 / BFS</span>
+          </div>
+          <span class="coming">规划中</span>
+        </article>
+
+        <article class="app soon">
+          <div class="ico ico-muted">🍜</div>
+          <h3>食堂等位估算</h3>
+          <p>饭点人多不多，出发前看一眼。</p>
+          <div class="tagrow">
+            <span class="tg tg-algo">队列</span>
+          </div>
+          <span class="coming">规划中</span>
+        </article>
+      </div>
+    </section>
+
+    <aside class="idea">
+      💡 <b>有个工具的点子？</b>&nbsp;应用中心的小工具都由同学提交和维护——想去「社区 · 学习交流」发帖聊聊，火了就上架。
+    </aside>
+
+  </main>
+
+</body>
+</html>

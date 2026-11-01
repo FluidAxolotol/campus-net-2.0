@@ -1,0 +1,397 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>AI 问答 · 校内网 2.0 学习版</title>
+  <link rel="stylesheet" href="assets/tokens.css">
+  <style>
+    /* ============================================================
+       基础
+       ============================================================ */
+    body {
+      margin: 0;
+      font-family: var(--font);
+      background: var(--bg);
+      color: var(--ink);
+      font-size: 14px;
+      line-height: 1.6;
+    }
+
+    /* ============================================================
+       顶部导航（真题库的内页，高亮"真题库"）
+       ============================================================ */
+    .nav {
+      height: var(--nav-h);
+      background: var(--card);
+      border-bottom: 1px solid var(--line);
+      display: flex;
+      align-items: center;
+      padding: 0 32px;
+      gap: 26px;
+    }
+
+    .nav .logo {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-weight: 700;
+      font-size: 16px;
+      color: var(--ink);
+      text-decoration: none;
+    }
+
+    .logo .mark {
+      width: 28px;
+      height: 28px;
+      border-radius: var(--r-sm);
+      background: var(--brand);
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+    }
+
+    .nav a {
+      color: var(--ink-2);
+      text-decoration: none;
+    }
+
+    .nav a.on {
+      color: var(--brand);
+      font-weight: 600;
+    }
+
+    .school {
+      margin-left: auto;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 13px;
+      color: var(--ink-2);
+      cursor: pointer;
+      padding: 7px 14px;
+      border: 1px solid var(--line);
+      border-radius: var(--r-pill);
+      background: var(--card);
+      font-family: inherit;
+    }
+
+    /* ============================================================
+       页面主体：聊天页同样用窄栏（760px）。
+       flex-direction:column 让消息从上往下依次排列
+       ============================================================ */
+    .wrap {
+      max-width: 760px;
+      margin: 0 auto;
+      padding: 24px 32px 64px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    /* 返回链接 */
+    .back {
+      font-size: 12.5px;
+    }
+
+    .back a {
+      color: var(--brand);
+      text-decoration: none;
+    }
+
+    /* ============================================================
+       文档条：当前正在就哪份真题提问，常驻在对话顶部
+       ============================================================ */
+    .docbar {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: var(--r-md);
+      padding: 10px 16px;
+    }
+
+    /* 文件图标：一个红色小纸张，右下角写 PDF */
+    .docbar .file {
+      width: 28px;
+      height: 34px;
+      border-radius: 4px;
+      background: #FDECEC;
+      display: flex;
+      align-items: flex-end;
+      justify-content: center;
+      font-size: 8px;
+      color: #C0392B;
+      font-weight: 700;
+      padding-bottom: 2px;
+    }
+
+    .docbar b {
+      font-size: 13px;
+      display: block;
+    }
+
+    .docbar .meta {
+      font-size: 11px;
+      color: var(--ink-3);
+    }
+
+    /* margin-left:auto 把标签推到最右 */
+    .docbar .tag {
+      margin-left: auto;
+      font-size: 11px;
+      color: #534AB7;        /* AI 功能用紫色调，与品牌蓝区分 */
+      background: #EEEDFE;
+      padding: 2px 10px;
+      border-radius: var(--r-pill);
+    }
+
+    /* ============================================================
+       聊天消息：本页核心布局。
+       .msg 用 flex 排"头像 + 气泡"；用户消息整体靠右
+       ============================================================ */
+    .chat {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    .msg {
+      display: flex;
+      gap: 10px;
+      max-width: 88%;        /* 气泡不顶满整行，留出空白更好读 */
+    }
+
+    .msg .av {
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      flex: 0 0 30px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 13px;
+    }
+
+    /* 用户消息：align-self 靠右 + row-reverse 让头像跑到气泡右边 */
+    .msg.user {
+      align-self: flex-end;
+      flex-direction: row-reverse;
+    }
+
+    .msg.user .av {
+      background: var(--brand-soft);
+    }
+
+    /* AI 头像用紫色渐变，一眼区分谁在说话 */
+    .msg.ai .av {
+      background: linear-gradient(135deg, #7F77DD, #2F6BFF);
+      color: #fff;
+    }
+
+    /* ============================================================
+       气泡：用户蓝底白字，AI 白底带边框
+       ============================================================ */
+    .bubble {
+      padding: 11px 15px;
+      border-radius: var(--r-md);
+      font-size: 13px;
+    }
+
+    .msg.user .bubble {
+      background: var(--brand);
+      color: #fff;
+      border-top-right-radius: 4px; /* 靠头像的一角压小，像微信 */
+    }
+
+    .msg.ai .bubble {
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-top-left-radius: 4px;
+      flex: 1;                /* AI 气泡撑满，方便里面放图表 */
+    }
+
+    /* KPI 小卡片：两列网格，放在 AI 气泡里 */
+    .kpis {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      margin-top: 10px;
+    }
+
+    .kpi {
+      background: var(--bg);
+      border-radius: 8px;
+      padding: 8px 12px;
+      font-size: 12px;
+    }
+
+    .kpi b {
+      color: var(--brand-deep);
+    }
+
+    /* 引用块：竖线 + 灰底，引用试卷原文 */
+    .quote {
+      margin-top: 10px;
+      background: #FAFAFB;
+      border-left: 3px solid #D9DCE3;
+      padding: 8px 12px;
+      font-size: 12px;
+      color: var(--ink-2);
+      border-radius: 0 8px 8px 0; /* 左边是竖线所以不圆角 */
+    }
+
+    /* 参考来源：AI 回答要有据可查 */
+    .ref {
+      margin-top: 10px;
+      padding-top: 8px;
+      border-top: 1px dashed var(--line);
+      font-size: 11.5px;
+      color: var(--ink-3);
+    }
+
+    .ref a {
+      color: var(--brand);
+      text-decoration: none;
+    }
+
+    /* 检索结果类回答（找到几份卷子）普通字号即可 */
+    .fallback {
+      color: var(--ink-2);
+    }
+
+    .fallback a {
+      color: var(--brand);
+    }
+
+    /* ============================================================
+       底部输入条：sticky 固定在视口底部，随时能接着问
+       ============================================================ */
+    .inputbar {
+      position: sticky;
+      bottom: 0;
+      background: var(--bg);   /* 和页面同色，滚动时遮住下面的内容 */
+      padding: 12px 0 4px;
+    }
+
+    .inputbar form {
+      display: flex;
+      gap: 10px;
+    }
+
+    .inputbar input {
+      flex: 1;
+      height: 42px;
+      border-radius: var(--r-md);
+      border: 1px solid var(--line);
+      background: var(--card);
+      padding: 0 16px;
+      font-size: 13.5px;
+      outline: none;
+      font-family: inherit;
+    }
+
+    .inputbar input:focus {
+      border-color: var(--brand);
+    }
+
+    .inputbar button {
+      height: 42px;
+      padding: 0 22px;
+      border: none;
+      border-radius: var(--r-md);
+      background: var(--brand);
+      color: #fff;
+      font-size: 13.5px;
+      font-weight: 600;
+      cursor: pointer;
+      font-family: inherit;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ===== 顶部导航 ===== -->
+  <header class="site-header">
+    <nav class="nav" aria-label="主导航">
+      <a class="logo" href="index.html">
+        <span class="mark" aria-hidden="true">校</span>
+        校内网 2.0
+      </a>
+      <a href="index.html">首页</a>
+      <a href="app-center.html">应用中心</a>
+      <a href="exam-lib.html" class="on">真题库</a>
+      <a href="community.html">校园社区</a>
+      <button class="school" type="button">🏫 中山大学 ▾</button>
+    </nav>
+  </header>
+
+  <!-- ===== 页面主体：文档条 + 对话 + 输入条 ===== -->
+  <main class="wrap">
+
+    <p class="back"><a href="exam-lib.html">‹ 返回真题库</a></p>
+
+    <!-- 当前提问针对的文档 -->
+    <section class="docbar" aria-label="当前文档">
+      <div class="file" aria-hidden="true">PDF</div>
+      <div>
+        <b>数据结构 · 2025 春期末</b>
+        <span class="meta">共 4 页 ｜ 已建立内容索引</span>
+      </div>
+      <span class="tag">✨ 就这份提问</span>
+    </section>
+
+    <!-- 对话区：一条消息一个 article，方便屏幕阅读器逐条朗读 -->
+    <div class="chat">
+
+      <article class="msg user">
+        <div class="av" aria-hidden="true">🙂</div>
+        <div class="bubble">这份卷子最后一题考了什么？难不难？</div>
+      </article>
+
+      <article class="msg ai">
+        <div class="av" aria-hidden="true">🤖</div>
+        <div class="bubble">
+          最后一题（第 5 大题，14 分）是<b>算法设计题</b>：
+          <blockquote class="quote">「给定一棵二叉排序树，设计算法求第 k 小的元素，要求平均时间复杂度优于 O(n)……」</blockquote>
+          考点：中序遍历性质 + 计数剪枝。属于<b>中上难度</b>——2024 秋同类题得分率约 41%。
+          <div class="kpis">
+            <div class="kpi">📊 题型分布：选择 30% ｜ 填空 20% ｜ <b>算法设计 35%</b></div>
+            <div class="kpi">📚 对应章节：<b>第 6 章 树与二叉树</b>（本卷占 4 题）</div>
+          </div>
+          <p class="ref">📎 依据：<a href="#">数据结构 2025 春期末 · 第 4 页第 5 大题原文</a></p>
+        </div>
+      </article>
+
+      <article class="msg user">
+        <div class="av" aria-hidden="true">🙂</div>
+        <div class="bubble">帮我找一下有大题答案解析的操作系统卷子</div>
+      </article>
+
+      <article class="msg ai">
+        <div class="av" aria-hidden="true">🤖</div>
+        <div class="bubble fallback">
+          找到 2 份符合条件的：<br>
+          ① <a href="#">操作系统 · 2024 秋期末（含答案）</a> · 下载 207 次<br>
+          ② <a href="#">操作系统 · 2023 秋期末（含解析）</a> · 下载 158 次<br><br>
+          <span style="color:var(--ink-3);font-size:12px;">目前库里暂无 2025 春的操作系统真题——如果你手里有，欢迎上传帮下一届 🙌</span>
+        </div>
+      </article>
+
+    </div>
+
+    <!-- 输入条：sticky 固定在底部 -->
+    <div class="inputbar">
+      <form action="#">
+        <input type="text" aria-label="继续提问" placeholder="继续提问…">
+        <button type="submit">发送</button>
+      </form>
+    </div>
+
+  </main>
+
+</body>
+</html>

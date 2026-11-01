@@ -1,140 +1,635 @@
 <!DOCTYPE html>
-<!-- lang="zh-CN"：告诉浏览器这个页面的内容是简体中文 -->
 <html lang="zh-CN">
 <head>
-  <!-- head 里放"给浏览器看的信息"，页面上不显示 -->
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>校内网 2.0 —— 找入口、找资料、找信息</title>
-  <!-- 引入外部 CSS 文件（CSS 三种引入方式里最推荐的一种） -->
-  <link rel="stylesheet" href="style.css">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>首页 · 校内网 2.0 学习版</title>
+  <link rel="stylesheet" href="assets/tokens.css">
+  <style>
+    /* ============================================================
+       基础：页面默认字体、底色、文字颜色
+       ============================================================ */
+    body {
+      margin: 0;
+      font-family: var(--font);
+      background: var(--bg);
+      color: var(--ink);
+      font-size: 14px;
+      line-height: 1.6;
+    }
+
+    /* ============================================================
+       顶部导航
+       ============================================================ */
+    .nav {
+      height: var(--nav-h);
+      background: var(--card);
+      border-bottom: 1px solid var(--line);
+      display: flex;
+      align-items: center;
+      padding: 0 32px;
+      gap: 26px;
+      position: sticky;
+      top: 0;
+      z-index: 10;
+    }
+
+    /* 原设计稿里 logo 是 div；这里改成链接，需要重置链接默认样式。
+       用 .nav .logo 提高优先级，避免被下面的 .nav a 覆盖字号和颜色。 */
+    .nav .logo {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-weight: 700;
+      font-size: 16px;
+      color: var(--ink);
+      text-decoration: none;
+    }
+
+    .logo .mark {
+      width: 28px;
+      height: 28px;
+      border-radius: var(--r-sm);
+      background: var(--brand);
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+    }
+
+    .nav a {
+      color: var(--ink-2);
+      text-decoration: none;
+      font-size: 14px;
+    }
+
+    .nav a.on {
+      color: var(--brand);
+      font-weight: 600;
+    }
+
+    /* 搜索框：flex:1 占满剩余空间，margin-left:auto 把它推到右侧 */
+    .search {
+      flex: 1;
+      max-width: 360px;
+      margin-left: auto;
+      position: relative;
+    }
+
+    .search input {
+      width: 100%;
+      height: 36px;
+      border-radius: var(--r-pill);
+      border: 1px solid var(--line);
+      background: var(--bg);
+      padding: 0 16px 0 40px;
+      font-size: 13px;
+      outline: none;
+    }
+
+    /* 放大镜图标绝对定位在输入框内部左侧 */
+    .search .mag {
+      position: absolute;
+      left: 14px;
+      top: 9px;
+      color: var(--ink-3);
+    }
+
+    .userzone {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    /* 学校下拉：父元素 relative，菜单才能相对它绝对定位 */
+    .school {
+      position: relative;
+    }
+
+    .school .cur {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-family: inherit;
+      font-size: 13px;
+      line-height: inherit;
+      color: var(--ink-2);
+      cursor: pointer;
+      padding: 7px 14px;
+      border: 1px solid var(--line);
+      border-radius: var(--r-pill);
+      background: var(--card);
+    }
+
+    /* 静态演示：菜单一直显示。真实项目中用 JS 控制展开/收起 */
+    .school .menu {
+      position: absolute;
+      top: 44px;
+      right: 0;
+      width: 220px;
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: var(--r-md);
+      box-shadow: 0 8px 24px rgba(16, 24, 40, .12);
+      padding: 6px;
+      z-index: 50;
+    }
+
+    .school .menu .t {
+      font-size: 11px;
+      color: var(--ink-3);
+      padding: 6px 10px 4px;
+    }
+
+    .school .menu div.opt {
+      padding: 8px 10px;
+      border-radius: 8px;
+      font-size: 13px;
+      color: var(--ink-2);
+      display: flex;
+      justify-content: space-between;
+      cursor: pointer;
+    }
+
+    .school .menu div.opt:hover {
+      background: var(--bg);
+    }
+
+    .school .menu div.opt.on {
+      color: var(--brand);
+      font-weight: 600;
+      background: var(--brand-soft);
+    }
+
+    .reg {
+      font-size: 13px;
+      color: var(--ink-2);
+      text-decoration: none;
+      cursor: pointer;
+    }
+
+    .login {
+      height: 34px;
+      padding: 0 20px;
+      border-radius: var(--r-pill);
+      border: 1px solid var(--brand);
+      color: var(--brand);
+      font-size: 13px;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      cursor: pointer;
+      background: transparent;
+    }
+
+    .login:hover {
+      background: var(--brand-soft);
+    }
+
+    /* ============================================================
+       首页布局
+       ============================================================ */
+    .wrap {
+      max-width: var(--max-w);
+      margin: 0 auto;
+      padding: 24px 32px 64px;
+    }
+
+    .hero {
+      background: linear-gradient(135deg, #2F6BFF 0%, #5E8BFF 100%);
+      border-radius: var(--r-lg);
+      padding: 34px 40px;
+      color: #fff;
+      margin-bottom: 24px;
+    }
+
+    .hero h1 {
+      margin: 0 0 8px;
+      font-size: 24px;
+    }
+
+    .hero p {
+      margin: 0 0 18px;
+      opacity: .85;
+      font-size: 14px;
+    }
+
+    /* 提问框：横向 flex，输入框占满剩余宽度 */
+    .hero .chat {
+      display: flex;
+      background: #fff;
+      border-radius: var(--r-md);
+      padding: 6px 6px 6px 18px;
+      align-items: center;
+      max-width: 560px;
+    }
+
+    .hero .chat input {
+      flex: 1;
+      border: none;
+      outline: none;
+      font-size: 14px;
+    }
+
+    .hero .chat button {
+      height: 38px;
+      padding: 0 20px;
+      border: none;
+      border-radius: var(--r-sm);
+      background: var(--brand);
+      color: #fff;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    .hero .q {
+      margin-top: 14px;
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .hero .q span {
+      background: rgba(255, 255, 255, .18);
+      border: 1px solid rgba(255, 255, 255, .35);
+      padding: 3px 12px;
+      border-radius: var(--r-pill);
+      font-size: 12px;
+      cursor: pointer;
+    }
+
+    /* 三栏内容区：Grid 的典型用法 */
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 20px;
+    }
+
+    .panel {
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: var(--r-lg);
+      padding: 20px 24px;
+    }
+
+    .panel h2 {
+      margin: 0 0 3px;
+      font-size: 16px;
+    }
+
+    .panel .sub {
+      color: var(--ink-3);
+      font-size: 12px;
+      margin-bottom: 14px;
+    }
+
+    /* 这是原设计稿的写法：float + 负 margin。
+       能还原效果，但不推荐；学习要点里会给出 flex 改法。 */
+    .panel .more {
+      font-size: 12px;
+      color: var(--brand);
+      text-decoration: none;
+      float: right; 
+      margin-top: -22px;
+    }
+
+    .cats {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 14px;
+      flex-wrap: wrap;
+    }
+
+    .cat {
+      border: 1px solid var(--line);
+      border-radius: var(--r-pill);
+      padding: 4px 14px;
+      font-size: 12.5px;
+      color: var(--ink-2);
+      cursor: pointer;
+    }
+
+    .cat.on {
+      border-color: var(--brand);
+      color: var(--brand);
+      background: var(--brand-soft);
+      font-weight: 600;
+    }
+
+    .paths {
+      display: flex;
+      flex-direction: column;
+      gap: 9px;
+    }
+
+    .path {
+      border: 1px solid var(--line);
+      border-radius: var(--r-md);
+      padding: 11px 14px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      cursor: pointer;
+    }
+
+    .path:hover {
+      border-color: var(--brand);
+    }
+
+    .path b {
+      font-size: 13.5px;
+      display: block;
+    }
+
+    .path .views {
+      color: var(--ink-3);
+      font-size: 11px;
+    }
+
+    .badge {
+      font-size: 10.5px;
+      padding: 1px 8px;
+      border-radius: var(--r-pill);
+      background: var(--brand-soft);
+      color: var(--brand);
+      white-space: nowrap;
+    }
+
+    .exams {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .exam {
+      display: flex;
+      justify-content: space-between;
+      font-size: 13px;
+      padding: 8px 0;
+      border-bottom: 1px dashed var(--line);
+    }
+
+    /* 结构伪类：最后一项不要下边框 */
+    .exam:last-child {
+      border-bottom: none;
+    }
+
+    .exam .meta {
+      color: var(--ink-3);
+      font-size: 11.5px;
+      display: block;
+    }
+
+    .dl {
+      color: var(--brand);
+      font-size: 12px;
+      cursor: pointer;
+      align-self: center;
+    }
+
+    .posts {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .post {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+      border: 1px solid var(--line);
+      border-radius: var(--r-md);
+      padding: 11px 14px;
+      cursor: pointer;
+    }
+
+    .post .tag {
+      flex: 0 0 auto;
+      font-size: 11px;
+      padding: 2px 9px;
+      border-radius: var(--r-pill);
+    }
+
+    /* 不同版块用不同底色区分 */
+    .t-2nd   { background: #FDF5E6; color: #C47F17; }
+    .t-lost  { background: #FBEAF0; color: #993556; }
+    .t-study { background: #EEF3FF; color: #185FA5; }
+    .t-club  { background: #E9F7EF; color: #0F9D58; }
+    .t-carpool { background: #E1F5EE; color: #0F6E56; }
+
+    .post b {
+      font-size: 13px;
+      display: block;
+    }
+
+    .post .meta {
+      color: var(--ink-3);
+      font-size: 11.5px;
+    }
+
+    .notice {
+      background: var(--brand-soft);
+      border: 1px solid #D9E4FF;
+      border-radius: var(--r-lg);
+      padding: 14px 20px;
+      margin-top: 20px;
+      font-size: 13px;
+      color: #1B4DD8;
+      display: flex;
+      gap: 10px;
+      align-items: center;
+    }
+
+    footer {
+      max-width: var(--max-w);
+      margin: 0 auto;
+      padding: 0 32px 40px;
+      color: var(--ink-3);
+      font-size: 12px;
+      display: flex;
+      gap: 18px;
+    }
+
+    /* 页脚链接：跟随页脚灰色，不显示下划线 */
+    footer a {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    footer a:hover {
+      color: var(--brand);
+    }
+  </style>
 </head>
 <body>
 
-  <!-- ① 顶部快捷栏：Logo + 导航入口 + 搜索框 + 登录注册 -->
-  <header class="top-bar">
-    <div class="logo">
-      <img src="logo.svg" alt="校内网 2.0 的 Logo">
-      <span>校内网 2.0</span>
-    </div>
+  <!-- ===== 顶部导航 ===== -->
+  <header class="site-header">
+    <nav class="nav" aria-label="主导航">
+      <a class="logo" href="index.html">
+        <span class="mark" aria-hidden="true">校</span>
+        校内网 2.0
+      </a>
+      <a href="index.html" class="on">首页</a>
+      <a href="app-center.html">应用中心</a>
+      <a href="exam-lib.html">真题库</a>
+      <a href="community.html">校园社区</a>
 
-    <nav>
-      <a href="#">企微路径导航</a>
-      <a href="#">真题资源库</a>
-      <a href="#">校园社区</a>
+      <div class="search">
+        <span class="mag" aria-hidden="true">⌕</span>
+        <input type="text" aria-label="站内搜索" placeholder="搜办事入口 / 真题 / 帖子">
+      </div>
+
+      <div class="userzone">
+        <div class="school">
+          <button type="button" class="cur">🏫 中山大学 ▾</button>
+          <!-- 静态演示：这个菜单一直显示；真实项目需要 JS 控制 -->
+          <div class="menu">
+            <div class="t">切换学校（广东 · 首批 3 所）</div>
+            <div class="opt on">中山大学 <span>✓</span></div>
+            <div class="opt">华南理工大学</div>
+            <div class="opt">哈尔滨工业大学（深圳）</div>
+          </div>
+        </div>
+        <a class="reg" href="register.html">注册</a>
+        <a class="login" href="login.html">登录</a>
+      </div>
     </nav>
-
-    <form class="search-box" action="#">
-      <input type="text" placeholder="搜路径、真题、帖子，如：请假">
-      <button type="submit">搜索</button>
-    </form>
-
-    <div class="account">
-      <a class="btn-login" href="#">登录 / 注册</a>
-    </div>
   </header>
 
-  <main>
+  <!-- ===== 主体内容 ===== -->
+  <main class="wrap">
 
-    <!-- ② 公告新闻区：站点公告与重要提醒 -->
-    <section class="notice">
-      <h2>公告</h2>
-      <ul>
-        <li>
-          <a href="#">新学期真题已更新：高数、大物、数据结构等 12 个科目</a>
-          <span class="date">10-12</span>
-        </li>
-        <li>
-          <a href="#">「学费缴纳」路径已变更，请查看最新操作指引</a>
-          <span class="date">10-10</span>
-        </li>
-        <li>
-          <a href="#">社区发帖规范上线，发帖前请先阅读</a>
-          <span class="date">10-08</span>
-        </li>
-      </ul>
-    </section>
-
-    <!-- ③ 账号设置：个人中心、设置、收藏与点赞的快捷入口 -->
-    <section class="account-quick">
-      <a href="#">个人中心</a>
-      <a href="#">我的收藏</a>
-      <a href="#">我的点赞</a>
-      <a href="#">设置</a>
-    </section>
-
-    <!-- ④ 校园社区动态：二手交易、失物招领、学习交流 -->
-    <section class="community">
-      <h2>校园社区动态</h2>
-      <div class="card-list">
-        <article class="card">
-          <span class="tag tag-ershou">二手交易</span>
-          <h3>出九成新自行车一辆</h3>
-          <p>毕业甩卖，180 元，校内自提，可小刀。</p>
-          <span class="meta">3 小时前 · 12 条回复</span>
-        </article>
-        <article class="card">
-          <span class="tag tag-shiwu">失物招领</span>
-          <h3>教学楼下捡到一张校园卡</h3>
-          <p>在教学楼 3-201 捡到，失主请带有效证件来认领。</p>
-          <span class="meta">今天 14:20 · 5 条回复</span>
-        </article>
-        <article class="card">
-          <span class="tag tag-xuexi">学习交流</span>
-          <h3>数据结构期末复习提纲分享</h3>
-          <p>自己整理的思维导图和错题集，不是真题，需要的同学自取。</p>
-          <span class="meta">昨天 · 32 条回复</span>
-        </article>
+    <!-- 主视觉 + 提问入口 -->
+    <section class="hero" aria-labelledby="hero-title">
+      <h1 id="hero-title">校园的事，问一句就够</h1>
+      <p>小工具、真题、同学圈——都在校内网 2.0 · 🏫 中山大学</p>
+      <div class="chat">
+        <input type="text" aria-label="提问" placeholder="例如：四六级报名怎么弄？">
+        <button type="button">提问</button>
+      </div>
+      <div class="q">
+        <span>四六级报名</span>
+        <span>场馆预约</span>
+        <span>差旅报销</span>
+        <span>成绩单打印</span>
       </div>
     </section>
 
-    <!-- ⑤ 企微路径导航精选：最热门的办事路径条目 -->
-    <section class="paths">
-      <h2>企微路径导航精选</h2>
-      <ul class="path-list">
-        <li>
-          <span class="tag tag-jiaowu">教务学习</span>
-          <span class="name">学生请假申请</span>
-          <span class="steps">企业微信 → 工作台 → 教务系统 → 请假申请</span>
-          <span class="hot">热度 1.2k</span>
-        </li>
-        <li>
-          <span class="tag tag-shenghuo">生活服务</span>
-          <span class="name">宿舍设施报修</span>
-          <span class="steps">企业微信 → 工作台 → 后勤服务 → 报修登记</span>
-          <span class="hot">热度 986</span>
-        </li>
-        <li>
-          <span class="tag tag-jiaofei">缴费报销</span>
-          <span class="name">学费 / 住宿费缴纳</span>
-          <span class="steps">企业微信 → 工作台 → 缴费中心 → 学费缴纳</span>
-          <span class="hot">热度 873</span>
-        </li>
-        <li>
-          <span class="tag tag-changguan">场馆预约</span>
-          <span class="name">体育馆场地预约</span>
-          <span class="steps">企业微信 → 工作台 → 场馆预约 → 选择时段</span>
-          <span class="hot">热度 754</span>
-        </li>
-        <li>
-          <span class="tag tag-jiaowu">证明开具</span>
-          <span class="name">在读证明开具</span>
-          <span class="steps">企业微信 → 工作台 → 数字校园 → 证明服务</span>
-          <span class="hot">热度 690</span>
-        </li>
-      </ul>
+    <!-- 三栏内容：应用中心 / 真题库 / 校园社区 -->
+    <section class="grid" aria-label="首页三栏内容">
+
+      <article class="panel">
+        <h2>🧭 应用中心（百宝箱）</h2>
+        <div class="sub">学生自制小工具集散地 · 当前：中山大学</div>
+        <a class="more" href="app-center.html">全部 ›</a>
+
+        <div class="cats">
+          <div class="cat on">热门</div>
+          <div class="cat">企微导航</div>
+          <div class="cat">学习</div>
+          <div class="cat">生活</div>
+        </div>
+
+        <div class="paths">
+          <div class="path">
+            <div>
+              <b>企微办事导航（中山大学）</b>
+              <span class="views">👁 2.3k · 入口在哪一查便知</span>
+            </div>
+            <span class="badge">导航</span>
+          </div>
+          <div class="path">
+            <div>
+              <b>竞赛寻搭子</b>
+              <span class="views">👁 1.8k · 组队不发愁</span>
+            </div>
+            <span class="badge">组队</span>
+          </div>
+          <div class="path">
+            <div>
+              <b>空教室查询</b>
+              <span class="views">👁 1.5k · 输入节次即查</span>
+            </div>
+            <span class="badge">工具</span>
+          </div>
+        </div>
+      </article>
+
+      <article class="panel">
+        <h2>📚 真题库</h2>
+        <div class="sub">一届帮一届 · 支持就内容提问</div>
+        <a class="more" href="exam-lib.html">全部 ›</a>
+
+        <div class="exams">
+          <div class="exam">
+            <div>
+              <b>高等数学 A（一）</b>
+              <span class="meta">2025 秋 · 期末 · PDF · 518 次下载</span>
+            </div>
+            <span class="dl">⬇</span>
+          </div>
+          <div class="exam">
+            <div>
+              <b>数据结构</b>
+              <span class="meta">2025 春 · 期末 · PDF · 342 次下载</span>
+            </div>
+            <span class="dl">⬇</span>
+          </div>
+          <div class="exam">
+            <div>
+              <b>操作系统</b>
+              <span class="meta">2024 秋 · 期末 · PDF · 207 次下载</span>
+            </div>
+            <span class="dl">⬇</span>
+          </div>
+        </div>
+      </article>
+
+      <article class="panel">
+        <h2>💬 校园社区</h2>
+        <div class="sub">二手 · 失物 · 学习 · 拼车</div>
+        <a class="more" href="community.html">进入 ›</a>
+
+        <div class="posts">
+          <div class="post">
+            <span class="tag t-2nd">二手</span>
+            <div>
+              <b>9 成新台灯 ¥30，毕业出</b>
+              <span class="meta">东校区 · 10 分钟前</span>
+            </div>
+          </div>
+          <div class="post">
+            <span class="tag t-lost">失物</span>
+            <div>
+              <b>捡到一张校园卡，已交保卫处</b>
+              <span class="meta">南校园 · 1 小时前</span>
+            </div>
+          </div>
+          <div class="post">
+            <span class="tag t-study">学习</span>
+            <div>
+              <b>高数期中复习小组招人</b>
+              <span class="meta">3 条回复 · 2 小时前</span>
+            </div>
+          </div>
+        </div>
+      </article>
+
     </section>
 
+    <aside class="notice">📢 新学期真题已开放上传；「四六级报名」路径已更新 · 09-24</aside>
   </main>
 
-  <!-- 页脚：关于我们、意见反馈、管理入口 -->
+  <!-- ===== 页脚 ===== -->
   <footer>
-    <p>
-      <a href="#">关于我们</a> ·
-      <a href="#">意见反馈</a> ·
-      <a href="#">管理入口</a>
-    </p>
-    <p>校内网 2.0 · 学生练手项目 · 仅限校内使用</p>
+    <span>关于我们</span>
+    <span>意见反馈</span>
+    <!-- 管理入口：指向管理后台的独立登录页 -->
+    <a href="admin-login.html">管理入口</a>
+    <span>© 2026 校内网 2.0 · 学生自建</span>
   </footer>
 
 </body>

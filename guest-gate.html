@@ -1,0 +1,552 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>游客访问控制 · 校内网 2.0 学习版</title>
+  <link rel="stylesheet" href="assets/tokens.css">
+  <style>
+    /* ============================================================
+       基础
+       ============================================================ */
+    body {
+      margin: 0;
+      font-family: var(--font);
+      background: var(--bg);
+      color: var(--ink);
+      font-size: 14px;
+      line-height: 1.6;
+    }
+
+    /* ============================================================
+       顶部导航：规范页只留 Logo 和返回链接，保持简洁
+       ============================================================ */
+    .nav {
+      height: var(--nav-h);
+      background: var(--card);
+      border-bottom: 1px solid var(--line);
+      display: flex;
+      align-items: center;
+      padding: 0 32px;
+      gap: 26px;
+    }
+
+    .nav .logo {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-weight: 700;
+      font-size: 16px;
+      color: var(--ink);
+      text-decoration: none;
+    }
+
+    .logo .mark {
+      width: 28px;
+      height: 28px;
+      border-radius: var(--r-sm);
+      background: var(--brand);
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+    }
+
+    .nav a.back {
+      color: var(--ink-2);
+      text-decoration: none;
+      font-size: 13px;
+    }
+
+    .nav a.back:hover {
+      color: var(--brand);
+    }
+
+    /* ============================================================
+       页面主体：规范页宽一些（960px），表格才摆得开
+       ============================================================ */
+    .wrap {
+      max-width: 960px;
+      margin: 0 auto;
+      padding: 24px 32px 70px;
+    }
+
+    .wrap h1 {
+      font-size: 22px;
+      margin: 0 0 4px;
+    }
+
+    .sub {
+      color: var(--ink-3);
+      font-size: 13px;
+      margin: 0 0 24px;
+    }
+
+    /* ============================================================
+       面板：白底卡片，一节一个
+       ============================================================ */
+    .panel {
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: var(--r-lg);
+      padding: 22px 26px;
+      margin-bottom: 22px;
+    }
+
+    .panel h2 {
+      margin: 0 0 14px;
+      font-size: 16px;
+    }
+
+    /* ============================================================
+       权限矩阵表：真正的 <table>，表头用 <thead> 包起来
+       ============================================================ */
+    table {
+      width: 100%;
+      border-collapse: collapse;  /* 合并相邻边框，不会出现双线 */
+      font-size: 13px;
+    }
+
+    th {
+      text-align: left;
+      font-size: 11.5px;
+      color: var(--ink-2);
+      font-weight: 600;
+      padding: 9px 12px;
+      border-bottom: 1px solid var(--line);
+      background: #FAFBFC;
+    }
+
+    td {
+      padding: 10px 12px;
+      border-bottom: 1px dashed var(--line);
+      vertical-align: top;      /* 多行单元格顶对齐更好读 */
+    }
+
+    /* 最后一行不画底边线 */
+    tr:last-child td {
+      border-bottom: none;
+    }
+
+    /* ✓ 绿色可用 / ✗ 红色拦截，颜色即语义 */
+    .yes { color: var(--good); font-weight: 600; }
+    .no  { color: var(--danger); font-weight: 600; }
+
+    .note {
+      font-size: 12px;
+      color: var(--ink-3);
+    }
+
+    /* ============================================================
+       场景演示：2×2 网格，每格是一个"小舞台"
+       ============================================================ */
+    .scene {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+    }
+
+    .stage {
+      background: var(--bg);
+      border: 1px solid var(--line);
+      border-radius: var(--r-md);
+      padding: 18px;
+      position: relative;       /* 给弹窗遮罩当定位基准 */
+      min-height: 230px;
+    }
+
+    .stage .cap {
+      font-size: 12px;
+      color: var(--ink-3);
+      margin-bottom: 12px;
+    }
+
+    /* ---------- 弹窗遮罩与弹窗 ---------- */
+    /* inset:0 是 top/right/bottom/left 全 0 的简写，铺满父级 */
+    .modal-mask {
+      position: absolute;
+      inset: 0;
+      background: rgba(28, 31, 38, .45);  /* 半透明黑遮罩 */
+      border-radius: var(--r-md);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .modal {
+      width: 330px;
+      background: #fff;
+      border-radius: var(--r-lg);
+      padding: 26px 28px;
+      text-align: center;
+      box-shadow: 0 12px 40px rgba(16, 24, 40, .22);
+    }
+
+    .modal .big {
+      font-size: 34px;
+      margin-bottom: 6px;
+    }
+
+    .modal h3 {
+      margin: 0 0 6px;
+      font-size: 16px;
+    }
+
+    .modal p {
+      margin: 0 0 18px;
+      font-size: 12.5px;
+      color: var(--ink-2);
+    }
+
+    /* 弹窗按钮：主（登录）占大、次（注册）占小，用 flex 比例控制 */
+    .modal .btns {
+      display: flex;
+      gap: 10px;
+    }
+
+    .modal .main {
+      flex: 1.4;
+      height: 42px;
+      border: none;
+      border-radius: var(--r-md);
+      background: var(--brand);
+      color: #fff;
+      font-size: 13.5px;
+      font-weight: 600;
+      cursor: pointer;
+      font-family: inherit;
+      text-decoration: none;
+      display: inline-block;
+      line-height: 42px;
+      box-sizing: border-box;
+    }
+
+    .modal .second {
+      flex: 1;
+      height: 42px;
+      border: 1px solid var(--brand);
+      border-radius: var(--r-md);
+      background: #fff;
+      color: var(--brand);
+      font-size: 13.5px;
+      font-weight: 600;
+      cursor: pointer;
+      font-family: inherit;
+      text-decoration: none;
+      display: inline-block;
+      line-height: 40px;
+      box-sizing: border-box;
+    }
+
+    /* "暂不登录"弱化处理，可关闭、不强制 */
+    .modal .skip {
+      margin-top: 12px;
+      font-size: 11.5px;
+      color: var(--ink-3);
+      cursor: pointer;
+    }
+
+    /* ---------- 场景里用到的演示元素 ---------- */
+    .btn-demo {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      height: 36px;
+      padding: 0 18px;
+      border-radius: var(--r-pill);
+      font-size: 13px;
+    }
+
+    /* 锁定态：灰底 + 🔒，游客一眼看懂"要先登录" */
+    .btn-locked {
+      background: var(--card);
+      border: 1px solid var(--line);
+      color: var(--ink-3);
+      cursor: pointer;
+    }
+
+    .btn-ok {
+      background: var(--brand);
+      border: none;
+      color: #fff;
+      font-weight: 600;
+    }
+
+    /* AI 问答入口演示：紫色渐变小卡 */
+    .qa-demo {
+      background: linear-gradient(135deg, #7F77DD, #5E8BFF);
+      border-radius: var(--r-md);
+      padding: 16px 18px;
+    }
+
+    .qa-demo .t {
+      color: #fff;
+      font-weight: 700;
+      font-size: 13px;
+      margin-bottom: 10px;
+    }
+
+    .qa-demo .input-demo {
+      display: flex;
+      gap: 10px;
+    }
+
+    .qa-demo input {
+      flex: 1;
+      height: 40px;
+      border: none;
+      border-radius: var(--r-md);
+      padding: 0 16px;
+      font-size: 13px;
+      background: #fff;
+      color: var(--ink-3);
+      font-family: inherit;
+    }
+
+    .qa-demo button {
+      height: 40px;
+      padding: 0 18px;
+      border: none;
+      border-radius: var(--r-md);
+      background: #fff;
+      color: #534AB7;
+      font-size: 13px;
+      font-weight: 700;
+      font-family: inherit;
+    }
+
+    /* 真题条目演示（场景 A 的背景内容） */
+    .exam-demo {
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      padding: 10px 14px;
+      background: #fff;
+      flex: 1;
+    }
+
+    .exam-demo b {
+      font-size: 13px;
+    }
+
+    /* ---------- 文字规范列表 ---------- */
+    .spec {
+      font-size: 13px;
+    }
+
+    .spec li {
+      margin: 6px 0;
+    }
+
+    /* 行内代码：米黄底等宽字体 */
+    code {
+      background: #F1EFE8;
+      padding: 1px 6px;
+      border-radius: 4px;
+      font-size: 12px;
+      font-family: ui-monospace, Menlo, monospace;
+    }
+
+    /* ============================================================
+       底部约定面板：品牌浅底，收尾强调
+       ============================================================ */
+    .panel.final {
+      background: var(--brand-soft);
+      border-color: #D9E4FF;
+    }
+
+    .panel.final h2 {
+      color: #1B4DD8;
+    }
+
+    .panel.final .spec {
+      color: #1B4DD8;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ===== 顶部导航 ===== -->
+  <header class="site-header">
+    <nav class="nav" aria-label="主导航">
+      <a class="logo" href="index.html">
+        <span class="mark" aria-hidden="true">校</span>
+        校内网 2.0 · 设计规范页
+      </a>
+      <a class="back" href="index.html">‹ 返回首页</a>
+    </nav>
+  </header>
+
+  <!-- ===== 页面主体 ===== -->
+  <main class="wrap">
+
+    <h1>P14 · 游客访问控制</h1>
+    <p class="sub">原则：游客<b>可阅读、不可提交、不可下载</b>。受限功能触发时，弹窗引导登录 / 注册。</p>
+
+    <!-- ===== 权限矩阵：一张表说清"谁能干什么" ===== -->
+    <section class="panel" aria-labelledby="matrix-title">
+      <h2 id="matrix-title">📋 权限矩阵</h2>
+      <table>
+        <thead>
+          <tr>
+            <th style="width:34%;">功能</th>
+            <th style="width:16%;">游客</th>
+            <th style="width:16%;">登录学生</th>
+            <th>说明</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>浏览内容（工具 / 真题列表 / 帖子）</td>
+            <td class="yes">✓ 可用</td>
+            <td class="yes">✓</td>
+            <td class="note">纯阅读，含学校切换、全站搜索</td>
+          </tr>
+          <tr>
+            <td>纯计算类小工具（空教室查询 / 绩点计算器）</td>
+            <td class="yes">✓ 可用</td>
+            <td class="yes">✓</td>
+            <td class="note">不产生数据提交，开放使用</td>
+          </tr>
+          <tr>
+            <td>⬇ 下载真题文件</td>
+            <td class="no">✗ 拦截</td>
+            <td class="yes">✓</td>
+            <td class="note">场景 A 弹窗</td>
+          </tr>
+          <tr>
+            <td>✨ AI 问答（真题库提问）</td>
+            <td class="no">✗ 拦截</td>
+            <td class="yes">✓</td>
+            <td class="note">场景 B 弹窗；控制 API 成本</td>
+          </tr>
+          <tr>
+            <td>💬 社区发帖 / 回帖 / 点赞 / 收藏</td>
+            <td class="no">✗ 拦截</td>
+            <td class="yes">✓</td>
+            <td class="note">场景 C；按钮呈"锁定态"</td>
+          </tr>
+          <tr>
+            <td>⬆ 上传真题</td>
+            <td class="no">✗ 拦截</td>
+            <td class="yes">✓</td>
+            <td class="note">点击后跳登录，回跳保留表单</td>
+          </tr>
+          <tr>
+            <td>🤝 竞赛寻搭子（提交信息）</td>
+            <td class="no">✗ 拦截</td>
+            <td class="yes">✓</td>
+            <td class="note">同上</td>
+          </tr>
+          <tr>
+            <td>🚨 纠错反馈（企微导航 / 帖子举报）</td>
+            <td class="no">✗ 拦截</td>
+            <td class="yes">✓</td>
+            <td class="note">同上</td>
+          </tr>
+          <tr>
+            <td>👤 个人中心</td>
+            <td class="no">✗ 需登录</td>
+            <td class="yes">✓</td>
+            <td class="note">直接跳登录页</td>
+          </tr>
+        </tbody>
+      </table>
+      <p class="note" style="margin-top:12px;">💡 判定规则一句话：<b>"只读的都开放，要写入服务端的都拦截。"</b>纯前端计算（绩点、空教室）无需登录。</p>
+    </section>
+
+    <!-- ===== 三个拦截场景 + 通用规范 ===== -->
+    <section class="panel" aria-labelledby="scene-title">
+      <h2 id="scene-title">🚧 拦截弹窗 · 三个典型场景</h2>
+      <div class="scene">
+
+        <!-- 场景 A：下载被拦 -->
+        <div class="stage">
+          <p class="cap">场景 A · 游客点击真题「⬇ 下载」</p>
+          <div style="display:flex;gap:10px;align-items:center;">
+            <div class="exam-demo">
+              <b>数据结构 · 2025 春期末</b>
+              <div class="note">含答案 · 下载 342 次</div>
+            </div>
+            <span class="btn-demo btn-locked">⬇ 下载</span>
+          </div>
+          <div class="modal-mask">
+            <div class="modal">
+              <div class="big" aria-hidden="true">📄</div>
+              <h3>下载真题需要登录</h3>
+              <p>登录后即可下载全部真题<br>注册只需 1 分钟，用校园邮箱就行</p>
+              <div class="btns">
+                <a class="main" href="login.html">登 录</a>
+                <a class="second" href="register.html">注 册</a>
+              </div>
+              <div class="skip">暂不登录，先逛逛</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 场景 B：AI 问答被拦 -->
+        <div class="stage">
+          <p class="cap">场景 B · 游客在真题库使用「✨ AI 问答」</p>
+          <div class="qa-demo">
+            <div class="t">✨ AI 问答</div>
+            <div class="input-demo">
+              <input type="text" aria-label="演示输入框" placeholder="高数上考哪些题型？">
+              <button type="button">提问</button>
+            </div>
+          </div>
+          <div class="modal-mask">
+            <div class="modal">
+              <div class="big" aria-hidden="true">✨</div>
+              <h3>AI 问答面向登录用户开放</h3>
+              <p>提问会调用 AI 服务，登录后免费使用<br>还能就每一份真题单独提问</p>
+              <div class="btns">
+                <a class="main" href="login.html">登 录</a>
+                <a class="second" href="register.html">注 册</a>
+              </div>
+              <div class="skip">暂不登录，先逛逛</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 场景 C：锁定态按钮 -->
+        <div class="stage">
+          <p class="cap">场景 C · 社区「＋ 发帖」按钮的游客锁定态</p>
+          <div style="display:flex;flex-direction:column;gap:10px;align-items:flex-start;">
+            <span class="btn-demo btn-ok" style="cursor:default;">＋ 发帖 <span class="note" style="color:#fff;">（登录后）</span></span>
+            <span class="btn-demo btn-locked">🔒 登录后发帖 <span class="note">（游客态）</span></span>
+            <p class="note">点击锁定态按钮 → 弹右侧同款弹窗</p>
+          </div>
+        </div>
+
+        <!-- 通用弹窗规范 -->
+        <div class="stage" style="display:flex;flex-direction:column;justify-content:center;">
+          <p class="cap">通用弹窗规范（所有场景复用）</p>
+          <ul class="spec" style="margin:0;padding-left:18px;">
+            <li><b>遮罩</b>：半透明黑 45%，弹窗居中</li>
+            <li><b>图标</b>：与被拦功能一致（📄/✨/💬…）</li>
+            <li><b>标题</b>：「×× 需要登录」/「×× 面向登录用户开放」</li>
+            <li><b>说明</b>：一句话价值 + 一句话降低门槛（"注册只需 1 分钟"）</li>
+            <li><b>按钮</b>：<b>登录（主）</b> + 注册（次）</li>
+            <li><b>次操作</b>："暂不登录，先逛逛" 可关闭，不强制</li>
+            <li><b>回跳</b>：登录成功后<b>回到触发页并保留上下文</b>（如已填的表单）</li>
+            <li><b>提示条替代</b>：上传页等整页受限场景，用页内黄色提示条 + 登录按钮，不用弹窗</li>
+          </ul>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ===== 开发约定 ===== -->
+    <section class="panel final" aria-labelledby="final-title">
+      <h2 id="final-title">📌 设计与开发约定</h2>
+      <ul class="spec" style="margin:0;padding-left:18px;">
+        <li>所有前台页面导航在<b>游客态</b>显示「注册 + 登录」（见首页），<b>登录态</b>显示头像昵称（见个人中心）；无需为每页单独设计游客变体</li>
+        <li>受限按钮的游客态统一用「🔒 + 灰底」样式（场景 C）</li>
+        <li>拦截弹窗是<b>全局唯一组件</b>，文案按场景注入；开发时做成 <code>&lt;LoginGate feature="download"/&gt;</code> 一类可复用组件</li>
+      </ul>
+    </section>
+
+  </main>
+
+</body>
+</html>

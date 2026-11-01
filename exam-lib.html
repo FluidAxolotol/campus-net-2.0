@@ -1,0 +1,501 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>真题库 · 校内网 2.0 学习版</title>
+  <link rel="stylesheet" href="assets/tokens.css">
+  <style>
+    /* ============================================================
+       基础
+       ============================================================ */
+    body {
+      margin: 0;
+      font-family: var(--font);
+      background: var(--bg);
+      color: var(--ink);
+      font-size: 14px;
+      line-height: 1.6;
+    }
+
+    /* ============================================================
+       顶部导航
+       ============================================================ */
+    .nav {
+      height: var(--nav-h);
+      background: var(--card);
+      border-bottom: 1px solid var(--line);
+      display: flex;
+      align-items: center;
+      padding: 0 32px;
+      gap: 26px;
+    }
+
+    .nav .logo {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-weight: 700;
+      font-size: 16px;
+      color: var(--ink);
+      text-decoration: none;
+    }
+
+    .logo .mark {
+      width: 28px;
+      height: 28px;
+      border-radius: var(--r-sm);
+      background: var(--brand);
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+    }
+
+    .nav a {
+      color: var(--ink-2);
+      text-decoration: none;
+    }
+
+    .nav a.on {
+      color: var(--brand);
+      font-weight: 600;
+    }
+
+    .search {
+      flex: 1;
+      max-width: 400px;
+      margin-left: auto;
+      position: relative;
+    }
+
+    .search input {
+      width: 100%;
+      height: 36px;
+      border-radius: var(--r-pill);
+      border: 1px solid var(--line);
+      background: var(--bg);
+      padding: 0 16px 0 40px;
+      font-size: 13px;
+      outline: none;
+    }
+
+    .search .mag {
+      position: absolute;
+      left: 14px;
+      top: 9px;
+      color: var(--ink-3);
+    }
+
+    .school {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-family: inherit;
+      font-size: 13px;
+      line-height: inherit;
+      color: var(--ink-2);
+      cursor: pointer;
+      padding: 7px 14px;
+      border: 1px solid var(--line);
+      border-radius: var(--r-pill);
+      background: var(--card);
+    }
+
+    /* ============================================================
+       两栏布局：左侧 220px 筛选栏 + 右侧主内容
+       ============================================================ */
+    .wrap {
+      max-width: var(--max-w);
+      margin: 0 auto;
+      padding: 24px 32px 64px;
+      display: grid;
+      grid-template-columns: 220px 1fr;
+      gap: 24px;
+    }
+
+    /* sticky：页面滚动时侧栏保持在视口内 */
+    .side {
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: var(--r-lg);
+      padding: 16px;
+      height: fit-content;
+      position: sticky;
+      top: 80px;
+    }
+
+    .side h3 {
+      margin: 0 0 8px;
+      font-size: 13px;
+      color: var(--ink-2);
+    }
+
+    .side .year-head {
+      margin-top: 16px;
+    }
+
+    .side .grp {
+      font-size: 11px;
+      color: var(--ink-3);
+      margin: 12px 0 6px;
+    }
+
+    .side .item {
+      font-size: 13px;
+      padding: 5px 8px;
+      border-radius: 6px;
+      cursor: pointer;
+      display: flex;
+      justify-content: space-between;
+    }
+
+    .side .item.on {
+      background: var(--brand-soft);
+      color: var(--brand);
+      font-weight: 600;
+    }
+
+    .side .cnt {
+      color: var(--ink-3);
+      font-size: 11px;
+    }
+
+    /* 链接做成按钮外观：需要 display:flex 才能垂直居中 */
+    .upbtn {
+      width: 100%;
+      height: 42px;
+      border: none;
+      border-radius: var(--r-md);
+      background: var(--brand);
+      color: #fff;
+      font-size: 13.5px;
+      font-weight: 600;
+      margin-bottom: 14px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-decoration: none;
+    }
+
+    .main {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    /* ============================================================
+       AI 问答卡片
+       ============================================================ */
+    .qa {
+      background: linear-gradient(135deg, #7F77DD 0%, #5E8BFF 100%);
+      border-radius: var(--r-lg);
+      padding: 20px 24px;
+      color: #fff;
+    }
+
+    .qa .h {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-weight: 700;
+      font-size: 15px;
+      margin: 0 0 4px;
+    }
+
+    .qa p {
+      margin: 0 0 12px;
+      font-size: 12.5px;
+      opacity: .85;
+    }
+
+    .qa .row {
+      display: flex;
+      gap: 10px;
+    }
+
+    .qa input {
+      flex: 1;
+      height: 40px;
+      border: none;
+      border-radius: var(--r-md);
+      padding: 0 16px;
+      font-size: 13.5px;
+      outline: none;
+    }
+
+    .qa button {
+      height: 40px;
+      padding: 0 20px;
+      border: none;
+      border-radius: var(--r-md);
+      background: #fff;
+      color: #534AB7;
+      font-size: 13.5px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    .qa .eg {
+      margin-top: 10px;
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .qa .eg span {
+      background: rgba(255, 255, 255, .2);
+      border: 1px solid rgba(255, 255, 255, .4);
+      padding: 2px 12px;
+      border-radius: var(--r-pill);
+      font-size: 11.5px;
+      cursor: pointer;
+    }
+
+    /* ============================================================
+       真题列表
+       ============================================================ */
+    .listhead {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+    }
+
+    .listhead b {
+      font-size: 15px;
+    }
+
+    .listhead .n {
+      font-size: 12px;
+      color: var(--ink-3);
+    }
+
+    .list {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .exam {
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: var(--r-md);
+      padding: 14px 18px;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    /* 文件图标：flex:0 0 40px 表示不放大、不缩小、固定 40px */
+    .file {
+      width: 40px;
+      height: 48px;
+      border-radius: 6px;
+      background: #FDECEC;
+      display: flex;
+      align-items: flex-end;
+      justify-content: center;
+      font-size: 9px;
+      color: #C0392B;
+      padding-bottom: 3px;
+      font-weight: 700;
+      flex: 0 0 40px;
+    }
+
+    .exam .t {
+      flex: 1;
+    }
+
+    .exam b {
+      font-size: 14px;
+      display: block;
+    }
+
+    .exam .meta {
+      color: var(--ink-3);
+      font-size: 12px;
+    }
+
+    /* 原来是 span，现在改成跳转到 AI 问答页的 <a>，补一条 text-decoration 去掉下划线 */
+    .qa2 {
+      font-size: 11.5px;
+      color: #534AB7;
+      background: #EEEDFE;
+      padding: 3px 10px;
+      border-radius: var(--r-pill);
+      white-space: nowrap;
+      cursor: pointer;
+      text-decoration: none;
+    }
+
+    .qa2:hover {
+      background: #E0DCF7;
+    }
+
+    .dl {
+      font-size: 12px;
+      color: var(--brand);
+      white-space: nowrap;
+      cursor: pointer;
+    }
+
+    /* 分页 */
+    .pager {
+      display: flex;
+      gap: 6px;
+      justify-content: center;
+      margin-top: 8px;
+    }
+
+    .pager span {
+      min-width: 32px;
+      height: 32px;
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      background: var(--card);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 13px;
+      cursor: pointer;
+    }
+
+    .pager .on {
+      background: var(--brand);
+      color: #fff;
+      border-color: var(--brand);
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ===== 顶部导航 ===== -->
+  <header class="site-header">
+    <nav class="nav" aria-label="主导航">
+      <a class="logo" href="index.html">
+        <span class="mark" aria-hidden="true">校</span>
+        校内网 2.0
+      </a>
+      <a href="index.html">首页</a>
+      <a href="app-center.html">应用中心</a>
+      <a href="exam-lib.html" class="on">真题库</a>
+      <a href="community.html">校园社区</a>
+
+      <div class="search">
+        <span class="mag" aria-hidden="true">⌕</span>
+        <input type="text" aria-label="搜索科目" placeholder="搜科目，如「高等数学」">
+      </div>
+      <button class="school" type="button">🏫 中山大学 ▾</button>
+    </nav>
+  </header>
+
+  <!-- ===== 页面内容：左侧筛选栏 + 右侧主内容 ===== -->
+  <div class="wrap">
+
+    <aside class="side">
+      <a class="upbtn" href="exam-upload.html">⬆ 上传真题</a>
+
+      <h3>按学院</h3>
+      <div class="grp">计算机学院</div>
+      <div class="item on">计算机科学与技术 <span class="cnt">128</span></div>
+      <div class="item">人工智能 <span class="cnt">86</span></div>
+      <div class="item">软件工程 <span class="cnt">74</span></div>
+
+      <div class="grp">其他学院</div>
+      <div class="item">数学学院 <span class="cnt">203</span></div>
+      <div class="item">外国语学院 <span class="cnt">96</span></div>
+
+      <h3 class="year-head">按学期</h3>
+      <div class="item">2025 秋 <span class="cnt">142</span></div>
+      <div class="item">2025 春 <span class="cnt">117</span></div>
+    </aside>
+
+    <main class="main">
+
+      <!-- AI 问答入口 -->
+      <section class="qa" aria-labelledby="qa-title">
+        <h2 id="qa-title" class="h">✨ AI 问答</h2>
+        <p>不用一份份翻——直接问：「高数上一般考哪些题型？」「这卷子最后一题考什么？」</p>
+        <form class="row" action="#">
+          <input type="text" aria-label="就真题库提问" placeholder="就真题库提问…">
+          <button type="submit">提问</button>
+        </form>
+        <div class="eg">
+          <span>高数上考哪些题型？</span>
+          <span>数据结构重点章节</span>
+          <span>有答案的卷子推荐</span>
+        </div>
+      </section>
+
+      <div class="listhead">
+        <b>计算机科学与技术</b>
+        <span class="n">128 份 · 按热度排序</span>
+      </div>
+
+      <!-- 真题列表 -->
+      <section class="list" aria-label="真题列表">
+        <article class="exam">
+          <div class="file">PDF</div>
+          <div class="t">
+            <b>高等数学 A（一）· 2025 秋期末</b>
+            <span class="meta">含答案 ｜ 上传：@小王 ｜ 下载 518 次</span>
+          </div>
+          <a class="qa2" href="exam-qa.html">✨ 就这份提问</a>
+          <span class="dl">⬇ 下载</span>
+        </article>
+
+        <article class="exam">
+          <div class="file">PDF</div>
+          <div class="t">
+            <b>数据结构 · 2025 春期末</b>
+            <span class="meta">含答案 ｜ 上传：@某学长 ｜ 下载 342 次</span>
+          </div>
+          <a class="qa2" href="exam-qa.html">✨ 就这份提问</a>
+          <span class="dl">⬇ 下载</span>
+        </article>
+
+        <article class="exam">
+          <div class="file">PDF</div>
+          <div class="t">
+            <b>操作系统 · 2024 秋期末</b>
+            <span class="meta">无答案 ｜ 上传：@Lily ｜ 下载 207 次</span>
+          </div>
+          <a class="qa2" href="exam-qa.html">✨ 就这份提问</a>
+          <span class="dl">⬇ 下载</span>
+        </article>
+
+        <article class="exam">
+          <div class="file">PDF</div>
+          <div class="t">
+            <b>计算机组成原理 · 2024 秋期末</b>
+            <span class="meta">含答案 ｜ 上传：@匿名 ｜ 下载 186 次</span>
+          </div>
+          <a class="qa2" href="exam-qa.html">✨ 就这份提问</a>
+          <span class="dl">⬇ 下载</span>
+        </article>
+
+        <article class="exam">
+          <div class="file">IMG</div>
+          <div class="t">
+            <b>大学英语（二）· 2025 春期末</b>
+            <span class="meta">图片版（6 页）｜ 上传：@阿明 ｜ 下载 96 次</span>
+          </div>
+          <span class="dl">⬇ 下载</span>
+        </article>
+      </section>
+
+      <nav class="pager" aria-label="分页">
+        <span>‹</span>
+        <span class="on">1</span>
+        <span>2</span>
+        <span>3</span>
+        <span>›</span>
+      </nav>
+
+    </main>
+  </div>
+
+</body>
+</html>

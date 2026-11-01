@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>注册 · 校内网 2.0 学习版</title>
+  <link rel="stylesheet" href="assets/tokens.css">
+  <style>
+    /* ============================================================
+       基础：整页垂直水平居中
+       ============================================================ */
+    body {
+      margin: 0;
+      font-family: var(--font);
+      background: var(--bg);
+      color: var(--ink);
+      font-size: 14px;
+      line-height: 1.6;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    /* ============================================================
+       注册卡片
+       ============================================================ */
+    .card {
+      width: 400px;
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: var(--r-lg);
+      padding: 36px 40px;
+      box-shadow: var(--shadow);
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-weight: 700;
+      font-size: 17px;
+      justify-content: center;
+      margin-bottom: 6px;
+    }
+
+    .logo .mark {
+      width: 32px;
+      height: 32px;
+      border-radius: var(--r-sm);
+      background: var(--brand);
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 15px;
+    }
+
+    .sub {
+      text-align: center;
+      color: var(--ink-3);
+      font-size: 12.5px;
+      margin-bottom: 26px;
+    }
+
+    /* ============================================================
+       表单字段
+       ============================================================ */
+    .field {
+      margin-bottom: 16px;
+    }
+
+    .field label {
+      display: block;
+      font-size: 12.5px;
+      color: var(--ink-2);
+      margin-bottom: 6px;
+      font-weight: 600;
+    }
+
+    .field .req {
+      color: var(--danger);
+    }
+
+    .field input,
+    .field select {
+      width: 100%;
+      height: 44px;
+      border: 1px solid var(--line);
+      border-radius: var(--r-md);
+      padding: 0 14px;
+      font-size: 14px;
+      outline: none;
+      background: #fff;
+      box-sizing: border-box;
+      color: var(--ink);
+    }
+
+    .field input:focus,
+    .field select:focus {
+      border-color: var(--brand);
+    }
+
+    /* 验证码：输入框 + 按钮横向排列 */
+    .vrow {
+      display: flex;
+      gap: 10px;
+    }
+
+    .vrow input {
+      flex: 1;
+    }
+
+    .vbtn {
+      height: 44px;
+      padding: 0 16px;
+      border: 1px solid var(--brand);
+      border-radius: var(--r-md);
+      background: var(--brand-soft);
+      color: var(--brand);
+      font-size: 12.5px;
+      font-weight: 600;
+      cursor: pointer;
+      white-space: nowrap;
+    }
+
+    .hint {
+      font-size: 11.5px;
+      color: var(--ink-3);
+      margin-top: 4px;
+    }
+
+    /* 两列字段行 */
+    .frow {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+    }
+
+    /* 协议勾选行 */
+    .agree {
+      display: flex;
+      gap: 8px;
+      align-items: flex-start;
+      font-size: 12px;
+      color: var(--ink-2);
+      margin: 4px 0 18px;
+    }
+
+    .agree a {
+      color: var(--brand);
+      text-decoration: none;
+    }
+
+    .btn {
+      width: 100%;
+      height: 46px;
+      border: none;
+      border-radius: var(--r-md);
+      background: var(--brand);
+      color: #fff;
+      font-size: 14.5px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    .alt {
+      margin-top: 20px;
+      text-align: center;
+      font-size: 13px;
+      color: var(--ink-2);
+    }
+
+    .alt a {
+      color: var(--brand);
+      text-decoration: none;
+      font-weight: 600;
+    }
+  </style>
+</head>
+<body>
+
+  <main class="card">
+    <div class="logo">
+      <span class="mark" aria-hidden="true">校</span>
+      校内网 2.0
+    </div>
+    <div class="sub">注册需校园邮箱验证 · 首批面向广东 3 所高校</div>
+
+    <form action="#">
+      <div class="field">
+        <label for="school">学校 <span class="req">*</span></label>
+        <select id="school">
+          <option>中山大学</option>
+          <option>华南理工大学</option>
+          <option>哈尔滨工业大学（深圳）</option>
+        </select>
+        <div class="hint">必填，暂不做学籍验证 · 同一学历只能注册一所学校</div>
+      </div>
+
+      <div class="frow">
+        <div class="field">
+          <label for="degree">学历阶段 <span class="req">*</span></label>
+          <select id="degree">
+            <option>本科</option>
+            <option>硕士</option>
+            <option>博士</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="enroll">入学时间 <span class="req">*</span></label>
+          <select id="enroll">
+            <option>2024 年（秋）</option>
+            <option selected>2025 年（秋）</option>
+            <option>2026 年（秋）</option>
+            <option>更早</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="field">
+        <label for="student-id">学号 <span class="req">*</span></label>
+        <input id="student-id" type="text" placeholder="如 23331000">
+      </div>
+
+      <div class="field">
+        <label for="campus-email">校园邮箱 <span class="req">*</span></label>
+        <input id="campus-email" type="text" placeholder="如 lexin@mail.sysu.edu.cn">
+        <div class="hint">仅接受本校邮箱后缀，用于身份验证</div>
+      </div>
+
+      <div class="field">
+        <label for="nickname">昵称 <span class="req">*</span></label>
+        <input id="nickname" type="text" placeholder="社区里显示的名字">
+      </div>
+
+      <div class="field">
+        <label for="code">验证码 <span class="req">*</span></label>
+        <div class="vrow">
+          <input id="code" type="text" placeholder="邮箱收到的 6 位验证码">
+          <button class="vbtn" type="button">获取验证码</button>
+        </div>
+      </div>
+
+      <div class="field">
+        <label for="password">设置密码 <span class="req">*</span></label>
+        <input id="password" type="password" placeholder="8–20 位，含字母和数字">
+      </div>
+
+      <div class="agree">
+        <input type="checkbox" id="agree" checked>
+        <label for="agree">
+          我已阅读并同意 <a href="#">《用户协议》</a> 与 <a href="#">《隐私政策》</a>，并承诺上传内容不侵犯他人版权
+        </label>
+      </div>
+
+      <button class="btn" type="submit">注 册</button>
+    </form>
+
+    <div class="alt">已有账号？<a href="login.html">直接登录</a></div>
+  </main>
+
+</body>
+</html>
