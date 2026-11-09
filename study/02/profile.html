@@ -1,0 +1,645 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>个人中心 · 校内网 2.0 学习版</title>
+  <link rel="stylesheet" href="assets/tokens.css">
+  <style>
+    /* ============================================================
+       基础
+       ============================================================ */
+    body {
+      margin: 0;
+      font-family: var(--font);
+      background: var(--bg);
+      color: var(--ink);
+      font-size: 14px;
+      line-height: 1.6;
+    }
+
+    /* ============================================================
+       顶部导航
+       ============================================================ */
+    .nav {
+      height: var(--nav-h);
+      background: var(--card);
+      border-bottom: 1px solid var(--line);
+      display: flex;
+      align-items: center;
+      padding: 0 32px;
+      gap: 26px;
+    }
+
+    .nav .logo {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-weight: 700;
+      font-size: 16px;
+      color: var(--ink);
+      text-decoration: none;
+    }
+
+    .logo .mark {
+      width: 28px;
+      height: 28px;
+      border-radius: var(--r-sm);
+      background: var(--brand);
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+    }
+
+    .nav a {
+      color: var(--ink-2);
+      text-decoration: none;
+    }
+
+    .nav a.on {
+      color: var(--brand);
+      font-weight: 600;
+    }
+
+    .search {
+      flex: 1;
+      max-width: 340px;
+      margin-left: auto;
+      position: relative;
+    }
+
+    .search input {
+      width: 100%;
+      height: 36px;
+      border-radius: var(--r-pill);
+      border: 1px solid var(--line);
+      background: var(--bg);
+      padding: 0 16px 0 40px;
+      font-size: 13px;
+      outline: none;
+    }
+
+    .search .mag {
+      position: absolute;
+      left: 14px;
+      top: 9px;
+      color: var(--ink-3);
+    }
+
+    .school {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-family: inherit;
+      font-size: 13px;
+      line-height: inherit;
+      color: var(--ink-2);
+      cursor: pointer;
+      padding: 7px 14px;
+      border: 1px solid var(--line);
+      border-radius: var(--r-pill);
+      background: var(--card);
+    }
+
+    /* 当前登录用户：做成链接，指向本页 */
+    .nav .me {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      cursor: pointer;
+      color: var(--ink);
+      text-decoration: none;
+    }
+
+    .me .avatar {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: #EEF3FF;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 15px;
+    }
+
+    .me .me-name {
+      font-size: 13px;
+    }
+
+    /* ============================================================
+       两栏布局：左侧个人卡片 + 右侧面板
+       ============================================================ */
+    .wrap {
+      max-width: var(--max-w);
+      margin: 0 auto;
+      padding: 24px 32px 64px;
+      display: grid;
+      grid-template-columns: 240px 1fr;
+      gap: 24px;
+    }
+
+    .pcard {
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: var(--r-lg);
+      padding: 24px;
+      height: fit-content;
+      text-align: center;
+    }
+
+    .pcard .big {
+      width: 72px;
+      height: 72px;
+      border-radius: 50%;
+      background: #EEF3FF;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 32px;
+      margin: 0 auto 10px;
+    }
+
+    .pcard .nick {
+      font-size: 16px;
+      font-weight: 700;
+    }
+
+    .pcard .sid {
+      font-size: 12px;
+      color: var(--ink-3);
+      margin-bottom: 14px;
+    }
+
+    .stats {
+      display: flex;
+      border-top: 1px solid var(--line);
+      border-bottom: 1px solid var(--line);
+      padding: 10px 0;
+      margin-bottom: 14px;
+    }
+
+    .stats div {
+      flex: 1;
+    }
+
+    .stats b {
+      display: block;
+      font-size: 16px;
+    }
+
+    .stats span {
+      font-size: 11px;
+      color: var(--ink-3);
+    }
+
+    .side {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      text-align: left;
+    }
+
+    .side a {
+      padding: 8px 12px;
+      border-radius: var(--r-sm);
+      color: var(--ink-2);
+      text-decoration: none;
+      font-size: 13px;
+      display: flex;
+      gap: 8px;
+      align-items: center;
+    }
+
+    .side a.on {
+      background: var(--brand-soft);
+      color: var(--brand);
+      font-weight: 600;
+    }
+
+    /* ============================================================
+       右侧面板
+       ============================================================ */
+    .panel {
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: var(--r-lg);
+      padding: 22px 26px;
+      margin-bottom: 18px;
+    }
+
+    .panel h2 {
+      margin: 0 0 16px;
+      font-size: 16px;
+    }
+
+    .frow {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+    }
+
+    .frow.spaced {
+      margin-top: 16px;
+    }
+
+    .field label {
+      display: block;
+      font-size: 12.5px;
+      color: var(--ink-2);
+      margin-bottom: 6px;
+      font-weight: 600;
+    }
+
+    .field .req {
+      color: var(--danger);
+    }
+
+    .field input,
+    .field select {
+      width: 100%;
+      height: 42px;
+      border: 1px solid var(--line);
+      border-radius: var(--r-md);
+      padding: 0 14px;
+      font-size: 13.5px;
+      outline: none;
+      background: #fff;
+      box-sizing: border-box;
+      color: var(--ink);
+    }
+
+    .field input:focus,
+    .field select:focus {
+      border-color: var(--brand);
+    }
+
+    /* 只读字段：底色变灰 */
+    .field .ro {
+      background: var(--bg);
+      color: var(--ink-2);
+    }
+
+    .hint {
+      font-size: 11.5px;
+      color: var(--ink-3);
+      margin-top: 4px;
+    }
+
+    .save {
+      height: 42px;
+      padding: 0 28px;
+      border: none;
+      border-radius: var(--r-md);
+      background: var(--brand);
+      color: #fff;
+      font-size: 13.5px;
+      font-weight: 600;
+      cursor: pointer;
+      margin-top: 18px;
+    }
+
+    .save.secondary {
+      margin-top: 14px;
+      background: var(--ink-2);
+    }
+
+    .sec-pwd {
+      border-top: 1px dashed var(--line);
+      padding-top: 18px;
+      margin-top: 18px;
+    }
+
+    .sec-pwd h3 {
+      margin: 0 0 12px;
+      font-size: 14px;
+      color: var(--ink-2);
+    }
+
+    /* 规则提示框 */
+    .rule-note {
+      background: #FDF5E6;
+      border: 1px solid #F0E3C0;
+      border-radius: var(--r-md);
+      padding: 10px 14px;
+      font-size: 12px;
+      color: #8A5B00;
+      line-height: 1.7;
+      margin-top: 14px;
+    }
+
+    /* ============================================================
+       我的真题 / 我的帖子
+       ============================================================ */
+    .mylist {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .myitem {
+      border: 1px solid var(--line);
+      border-radius: var(--r-md);
+      padding: 12px 16px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .file {
+      width: 34px;
+      height: 40px;
+      border-radius: 6px;
+      background: #FDECEC;
+      display: flex;
+      align-items: flex-end;
+      justify-content: center;
+      font-size: 8px;
+      color: #C0392B;
+      padding-bottom: 2px;
+      font-weight: 700;
+      flex: 0 0 34px;
+    }
+
+    .myitem .t {
+      flex: 1;
+    }
+
+    .myitem b {
+      font-size: 13.5px;
+      display: block;
+    }
+
+    .myitem .meta {
+      color: var(--ink-3);
+      font-size: 11.5px;
+    }
+
+    .st {
+      font-size: 10.5px;
+      padding: 1px 9px;
+      border-radius: var(--r-pill);
+      white-space: nowrap;
+    }
+
+    .st-ok {
+      background: #E9F7EF;
+      color: var(--good);
+    }
+
+    .st-wait {
+      background: #FDF5E6;
+      color: var(--warn);
+    }
+
+    .op {
+      font-size: 11.5px;
+      cursor: pointer;
+      color: var(--ink-3);
+      margin-left: 10px;
+    }
+
+    .op.del {
+      color: var(--danger);
+    }
+
+    .postmini {
+      border: 1px solid var(--line);
+      border-radius: var(--r-md);
+      padding: 10px 16px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 13px;
+    }
+
+    .postmini .meta {
+      color: var(--ink-3);
+      font-size: 11.5px;
+    }
+
+    .tag {
+      font-size: 10.5px;
+      padding: 1px 9px;
+      border-radius: var(--r-pill);
+    }
+
+    .t-2nd   { background: #FDF5E6; color: #C47F17; }
+    .t-study { background: #EEF3FF; color: #185FA5; }
+
+    .empty {
+      color: var(--ink-3);
+      font-size: 12.5px;
+      text-align: center;
+      padding: 14px 0;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ===== 顶部导航 ===== -->
+  <header class="site-header">
+    <nav class="nav" aria-label="主导航">
+      <a class="logo" href="index.html">
+        <span class="mark" aria-hidden="true">校</span>
+        校内网 2.0
+      </a>
+      <a href="index.html">首页</a>
+      <a href="app-center.html">应用中心</a>
+      <a href="exam-lib.html">真题库</a>
+      <a href="community.html">校园社区</a>
+
+      <div class="search">
+        <span class="mag" aria-hidden="true">⌕</span>
+        <input type="text" aria-label="站内搜索" placeholder="搜索">
+      </div>
+      <button class="school" type="button">🏫 中山大学 ▾</button>
+      <a class="me" href="profile.html">
+        <span class="avatar" aria-hidden="true">🧑‍🎓</span>
+        <span class="me-name">乐乐</span>
+      </a>
+    </nav>
+  </header>
+
+  <!-- ===== 页面内容 ===== -->
+  <div class="wrap">
+
+    <!-- 左侧个人卡片 -->
+    <aside class="profile-column">
+      <section class="pcard">
+        <div class="big" aria-hidden="true">🧑‍🎓</div>
+        <div class="nick">乐乐</div>
+        <div class="sid">
+          🏫 中山大学 · 本科 · 2024 级<br>
+          计算机学院 · 24331xxx
+        </div>
+
+        <div class="stats">
+          <div><b>6</b><span>上传真题</span></div>
+          <div><b>12</b><span>发帖</span></div>
+          <div><b>48</b><span>获赞</span></div>
+        </div>
+
+        <nav class="side" aria-label="个人中心导航">
+          <a href="#" class="on">👤 个人资料</a>
+          <a href="#">📚 我的真题</a>
+          <a href="#">💬 我的帖子</a>
+          <a href="#">⭐ 我的收藏</a>
+        </nav>
+      </section>
+    </aside>
+
+    <!-- 右侧内容面板 -->
+    <main>
+
+      <section class="panel">
+        <h2>👤 个人资料</h2>
+
+        <form action="#">
+          <div class="frow">
+            <div class="field">
+              <label for="nickname">昵称</label>
+              <input id="nickname" type="text" value="乐乐">
+            </div>
+            <div class="field">
+              <label for="school">学校 <span class="req">*</span></label>
+              <select id="school">
+                <option selected>中山大学</option>
+                <option>华南理工大学</option>
+                <option>哈尔滨工业大学（深圳）</option>
+              </select>
+              <div class="hint">同一学历阶段只能归属一所学校</div>
+            </div>
+          </div>
+
+          <div class="frow spaced">
+            <div class="field">
+              <label for="degree">学历阶段 <span class="req">*</span></label>
+              <select id="degree">
+                <option selected>本科</option>
+                <option>硕士</option>
+                <option>博士</option>
+              </select>
+            </div>
+            <div class="field">
+              <label for="enroll">入学时间 <span class="req">*</span></label>
+              <select id="enroll">
+                <option selected>2024 年（秋）</option>
+                <option>2025 年（秋）</option>
+                <option>2026 年（秋）</option>
+                <option>更早</option>
+              </select>
+            </div>
+          </div>
+
+          <aside class="rule-note">
+            ⚠️ <b>学校 / 学历 / 入学时间 一经设置，修改受限：</b><br>
+            · 同一账号的<b>同一学历阶段</b>只能归属一所学校（如本科→中山大学，则本科不能再属于华工）<br>
+            · 更换学校需先把当前学历标记为「已毕业」或联系管理员<br>
+            · 读取硕博阶段可另选学校（毕业后升学属正常流转）
+          </aside>
+
+          <div class="frow spaced">
+            <div class="field">
+              <label for="student-id">学号</label>
+              <input id="student-id" class="ro" type="text" value="24331xxx" readonly>
+              <div class="hint">学号不可修改</div>
+            </div>
+            <div class="field">
+              <label for="campus-email">校园邮箱</label>
+              <input id="campus-email" class="ro" type="text" value="lexin@mail.sysu.edu.cn" readonly>
+            </div>
+          </div>
+
+          <div class="frow spaced">
+            <div class="field">
+              <label for="college">学院</label>
+              <input id="college" type="text" value="计算机学院">
+            </div>
+            <div class="field">
+              <label for="bio">个人简介</label>
+              <input id="bio" type="text" value="帮一届，是一届～" placeholder="一句话介绍自己">
+            </div>
+          </div>
+
+          <button class="save" type="submit">保存修改</button>
+        </form>
+
+        <!-- 修改密码是另一组操作，单独用一个 form -->
+        <form class="sec-pwd" action="#">
+          <h3>🔐 修改密码</h3>
+          <div class="frow">
+            <div class="field">
+              <label for="current-password">当前密码</label>
+              <input id="current-password" type="password" placeholder="输入当前密码">
+            </div>
+            <div class="field">
+              <label for="new-password">新密码</label>
+              <input id="new-password" type="password" placeholder="8–20 位，含字母和数字">
+            </div>
+          </div>
+          <button class="save secondary" type="submit">更新密码</button>
+        </form>
+      </section>
+
+      <section class="panel">
+        <h2>📚 我上传的真题</h2>
+        <div class="mylist">
+          <article class="myitem">
+            <div class="file">PDF</div>
+            <div class="t">
+              <b>高等数学 A（一）· 2025 秋期末</b>
+              <span class="meta">上传于 09-20 · 下载 518 次</span>
+            </div>
+            <span class="st st-ok">已通过</span>
+            <span class="op del">删除</span>
+          </article>
+
+          <article class="myitem">
+            <div class="file">PDF</div>
+            <div class="t">
+              <b>线性代数 · 2025 秋期中</b>
+              <span class="meta">上传于 09-23 · 待审核</span>
+            </div>
+            <span class="st st-wait">审核中</span>
+            <span class="op del">撤回</span>
+          </article>
+        </div>
+      </section>
+
+      <section class="panel">
+        <h2>💬 我发的帖子</h2>
+        <div class="mylist">
+          <article class="postmini">
+            <div>
+              <b>9 成新台灯 ¥30 出，自提</b>
+              <span class="tag t-2nd">二手</span>
+              <div class="meta">10 分钟前 · 💬 12 · 👍 23</div>
+            </div>
+            <span class="op">编辑</span>
+            <span class="op del">删除</span>
+          </article>
+
+          <article class="postmini">
+            <div>
+              <b>高数期中复习小组招人</b>
+              <span class="tag t-study">学习</span>
+              <div class="meta">2 小时前 · 💬 3 · 👍 9</div>
+            </div>
+            <span class="op">编辑</span>
+            <span class="op del">删除</span>
+          </article>
+        </div>
+      </section>
+
+      <section class="panel">
+        <h2>⭐ 我的收藏</h2>
+        <div class="empty">暂无收藏——看到好内容点 ⭐ 就会出现在这里</div>
+      </section>
+
+    </main>
+  </div>
+
+</body>
+</html>
