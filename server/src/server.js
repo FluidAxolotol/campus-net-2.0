@@ -18,8 +18,8 @@ async function main() {
   const dbOk = await pingDatabase();
   if (!dbOk) throw new Error('数据库健康检查失败');
 
-  const server = app.listen(config.port, '127.0.0.1', () => {
-    console.log(`[campus2] env=${config.env} listen=127.0.0.1:${config.port}`);
+  const server = app.listen(config.port, config.host, () => {
+    console.log(`[campus2] env=${config.env} listen=${config.host}:${config.port}`);
     console.log(`[campus2] db=${config.db.host}:${config.db.port}/${config.db.name}`);
     console.log(`[campus2] uploads=${config.uploadDir}`);
   });

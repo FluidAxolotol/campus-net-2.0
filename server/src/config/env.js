@@ -54,6 +54,7 @@ export const config = {
   env: env.NODE_ENV || 'development',
   isProd,
   isTest,
+  host: env.HOST || '127.0.0.1',   // 本机默认只监听回环；Docker 内网需要 0.0.0.0
   port: int('PORT', 3100),
   publicOrigin: env.PUBLIC_ORIGIN || 'http://localhost:8088',
 
