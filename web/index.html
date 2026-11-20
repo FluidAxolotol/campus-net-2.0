@@ -1,0 +1,578 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>首页 · 校内网 2.0 学习版</title>
+  <link rel="stylesheet" href="assets/tokens.css">
+  <link rel="stylesheet" href="assets/site.css">
+  <link rel="icon" href="logo.svg" type="image/svg+xml">
+  <style>
+    /* ============================================================
+       基础：页面默认字体、底色、文字颜色
+       ============================================================ */
+    body {
+      margin: 0;
+      font-family: var(--font);
+      background: var(--bg);
+      color: var(--ink);
+      font-size: 14px;
+      line-height: 1.6;
+    }
+
+    /* ============================================================
+       顶部导航
+       ============================================================ */
+    .nav {
+      height: var(--nav-h);
+      background: var(--card);
+      border-bottom: 1px solid var(--line);
+      display: flex;
+      align-items: center;
+      padding: 0 32px;
+      gap: 26px;
+      position: sticky;
+      top: 0;
+      z-index: 10;
+    }
+
+    /* 原设计稿里 logo 是 div；这里改成链接，需要重置链接默认样式。
+       用 .nav .logo 提高优先级，避免被下面的 .nav a 覆盖字号和颜色。 */
+    .nav .logo {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-weight: 700;
+      font-size: 16px;
+      color: var(--ink);
+      text-decoration: none;
+    }
+
+    .logo .mark {
+      width: 28px;
+      height: 28px;
+      border-radius: var(--r-sm);
+      background: var(--brand);
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+    }
+
+    .nav a {
+      color: var(--ink-2);
+      text-decoration: none;
+      font-size: 14px;
+    }
+
+    .nav a.on {
+      color: var(--brand);
+      font-weight: 600;
+    }
+
+    /* 搜索框：flex:1 占满剩余空间，margin-left:auto 把它推到右侧 */
+    .search {
+      flex: 1;
+      max-width: 360px;
+      margin-left: auto;
+      position: relative;
+    }
+
+    .search input {
+      width: 100%;
+      height: 36px;
+      border-radius: var(--r-pill);
+      border: 1px solid var(--line);
+      background: var(--bg);
+      padding: 0 16px 0 40px;
+      font-size: 13px;
+      outline: none;
+    }
+
+    /* 放大镜图标绝对定位在输入框内部左侧 */
+    .search .mag {
+      position: absolute;
+      left: 14px;
+      top: 9px;
+      color: var(--ink-3);
+    }
+
+    .userzone {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    /* 学校下拉：父元素 relative，菜单才能相对它绝对定位 */
+    .school {
+      position: relative;
+    }
+
+    .school .cur {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-family: inherit;
+      font-size: 13px;
+      line-height: inherit;
+      color: var(--ink-2);
+      cursor: pointer;
+      padding: 7px 14px;
+      border: 1px solid var(--line);
+      border-radius: var(--r-pill);
+      background: var(--card);
+    }
+
+    /* 静态演示：菜单一直显示。真实项目中用 JS 控制展开/收起 */
+    .school .menu {
+      position: absolute;
+      top: 44px;
+      right: 0;
+      width: 220px;
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: var(--r-md);
+      box-shadow: 0 8px 24px rgba(16, 24, 40, .12);
+      padding: 6px;
+      z-index: 50;
+    }
+
+    .school .menu .t {
+      font-size: 11px;
+      color: var(--ink-3);
+      padding: 6px 10px 4px;
+    }
+
+    .school .menu div.opt {
+      padding: 8px 10px;
+      border-radius: 8px;
+      font-size: 13px;
+      color: var(--ink-2);
+      display: flex;
+      justify-content: space-between;
+      cursor: pointer;
+    }
+
+    .school .menu div.opt:hover {
+      background: var(--bg);
+    }
+
+    .school .menu div.opt.on {
+      color: var(--brand);
+      font-weight: 600;
+      background: var(--brand-soft);
+    }
+
+    .reg {
+      font-size: 13px;
+      color: var(--ink-2);
+      text-decoration: none;
+      cursor: pointer;
+    }
+
+    .login {
+      height: 34px;
+      padding: 0 20px;
+      border-radius: var(--r-pill);
+      border: 1px solid var(--brand);
+      color: var(--brand);
+      font-size: 13px;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      cursor: pointer;
+      background: transparent;
+    }
+
+    .login:hover {
+      background: var(--brand-soft);
+    }
+
+    /* ============================================================
+       首页布局
+       ============================================================ */
+    .wrap {
+      max-width: var(--max-w);
+      margin: 0 auto;
+      padding: 24px 32px 64px;
+    }
+
+    .hero {
+      background: linear-gradient(135deg, #2F6BFF 0%, #5E8BFF 100%);
+      border-radius: var(--r-lg);
+      padding: 34px 40px;
+      color: #fff;
+      margin-bottom: 24px;
+    }
+
+    .hero h1 {
+      margin: 0 0 8px;
+      font-size: 24px;
+    }
+
+    .hero p {
+      margin: 0 0 18px;
+      opacity: .85;
+      font-size: 14px;
+    }
+
+    /* 提问框：横向 flex，输入框占满剩余宽度 */
+    .hero .chat {
+      display: flex;
+      background: #fff;
+      border-radius: var(--r-md);
+      padding: 6px 6px 6px 18px;
+      align-items: center;
+      max-width: 560px;
+    }
+
+    .hero .chat input {
+      flex: 1;
+      border: none;
+      outline: none;
+      font-size: 14px;
+    }
+
+    .hero .chat button {
+      height: 38px;
+      padding: 0 20px;
+      border: none;
+      border-radius: var(--r-sm);
+      background: var(--brand);
+      color: #fff;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    .hero .q {
+      margin-top: 14px;
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .hero .q span {
+      background: rgba(255, 255, 255, .18);
+      border: 1px solid rgba(255, 255, 255, .35);
+      padding: 3px 12px;
+      border-radius: var(--r-pill);
+      font-size: 12px;
+      cursor: pointer;
+    }
+
+    /* 三栏内容区：Grid 的典型用法 */
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 20px;
+    }
+
+    .panel {
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: var(--r-lg);
+      padding: 20px 24px;
+    }
+
+    .panel h2 {
+      margin: 0 0 3px;
+      font-size: 16px;
+    }
+
+    .panel .sub {
+      color: var(--ink-3);
+      font-size: 12px;
+      margin-bottom: 14px;
+    }
+
+    /* 这是原设计稿的写法：float + 负 margin。
+       能还原效果，但不推荐；学习要点里会给出 flex 改法。 */
+    .panel .more {
+      font-size: 12px;
+      color: var(--brand);
+      text-decoration: none;
+      float: right; 
+      margin-top: -22px;
+    }
+
+    .cats {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 14px;
+      flex-wrap: wrap;
+    }
+
+    .cat {
+      border: 1px solid var(--line);
+      border-radius: var(--r-pill);
+      padding: 4px 14px;
+      font-size: 12.5px;
+      color: var(--ink-2);
+      cursor: pointer;
+    }
+
+    .cat.on {
+      border-color: var(--brand);
+      color: var(--brand);
+      background: var(--brand-soft);
+      font-weight: 600;
+    }
+
+    .paths {
+      display: flex;
+      flex-direction: column;
+      gap: 9px;
+    }
+
+    .path {
+      border: 1px solid var(--line);
+      border-radius: var(--r-md);
+      padding: 11px 14px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      cursor: pointer;
+    }
+
+    .path:hover {
+      border-color: var(--brand);
+    }
+
+    /* 动态渲染后，整条路径是 <a>；保持卡片原样，不要蓝色下划线 */
+    a.path,
+    a.post {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    .path b {
+      font-size: 13.5px;
+      display: block;
+    }
+
+    .path .views {
+      color: var(--ink-3);
+      font-size: 11px;
+    }
+
+    .badge {
+      font-size: 10.5px;
+      padding: 1px 8px;
+      border-radius: var(--r-pill);
+      background: var(--brand-soft);
+      color: var(--brand);
+      white-space: nowrap;
+    }
+
+    .exams {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .exam {
+      display: flex;
+      justify-content: space-between;
+      font-size: 13px;
+      padding: 8px 0;
+      border-bottom: 1px dashed var(--line);
+    }
+
+    /* 结构伪类：最后一项不要下边框 */
+    .exam:last-child {
+      border-bottom: none;
+    }
+
+    .exam .meta {
+      color: var(--ink-3);
+      font-size: 11.5px;
+      display: block;
+    }
+
+    .dl {
+      color: var(--brand);
+      font-size: 12px;
+      cursor: pointer;
+      align-self: center;
+    }
+
+    .posts {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .post {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+      border: 1px solid var(--line);
+      border-radius: var(--r-md);
+      padding: 11px 14px;
+      cursor: pointer;
+    }
+
+    .post .tag {
+      flex: 0 0 auto;
+      font-size: 11px;
+      padding: 2px 9px;
+      border-radius: var(--r-pill);
+    }
+
+    /* 不同版块用不同底色区分 */
+    .t-2nd   { background: #FDF5E6; color: #C47F17; }
+    .t-lost  { background: #FBEAF0; color: #993556; }
+    .t-study { background: #EEF3FF; color: #185FA5; }
+    .t-club  { background: #E9F7EF; color: #0F9D58; }
+    .t-carpool { background: #E1F5EE; color: #0F6E56; }
+
+    .post b {
+      font-size: 13px;
+      display: block;
+    }
+
+    .post .meta {
+      color: var(--ink-3);
+      font-size: 11.5px;
+    }
+
+    .notice {
+      background: var(--brand-soft);
+      border: 1px solid #D9E4FF;
+      border-radius: var(--r-lg);
+      padding: 14px 20px;
+      margin-top: 20px;
+      font-size: 13px;
+      color: #1B4DD8;
+      display: flex;
+      gap: 10px;
+      align-items: center;
+    }
+
+    footer {
+      max-width: var(--max-w);
+      margin: 0 auto;
+      padding: 0 32px 40px;
+      color: var(--ink-3);
+      font-size: 12px;
+      display: flex;
+      gap: 18px;
+    }
+
+    /* 页脚链接：跟随页脚灰色，不显示下划线 */
+    footer a {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    footer a:hover {
+      color: var(--brand);
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ===== 顶部导航 ===== -->
+  <header class="site-header">
+    <nav class="nav" aria-label="主导航">
+      <a class="logo" href="index.html">
+        <span class="mark" aria-hidden="true">校</span>
+        校内网 2.0
+      </a>
+      <a href="index.html" class="on">首页</a>
+      <a href="app-center.html">应用中心</a>
+      <a href="exam-lib.html">真题库</a>
+      <a href="community.html">校园社区</a>
+
+      <div class="search">
+        <span class="mag" aria-hidden="true">⌕</span>
+        <input type="text" aria-label="站内搜索" placeholder="搜办事入口 / 真题 / 帖子">
+      </div>
+
+      <div class="userzone">
+        <div class="school">
+          <button type="button" class="cur" id="school-btn">🏫 加载中… ▾</button>
+          <div class="menu" id="school-menu" hidden></div>
+        </div>
+      </div>
+    </nav>
+  </header>
+
+  <!-- ===== 主体内容 ===== -->
+  <main class="wrap">
+
+    <!-- 主视觉 + 提问入口 -->
+    <section class="hero" aria-labelledby="hero-title">
+      <h1 id="hero-title">校园的事，问一句就够</h1>
+      <p id="hero-sub">小工具、真题、同学圈——都在校内网 2.0</p>
+      <div class="chat">
+        <input type="text" aria-label="提问" placeholder="例如：四六级报名怎么弄？">
+        <button type="button">提问</button>
+      </div>
+      <div class="q">
+        <span>四六级报名</span>
+        <span>场馆预约</span>
+        <span>差旅报销</span>
+        <span>成绩单打印</span>
+      </div>
+    </section>
+
+    <!-- 三栏内容：应用中心 / 真题库 / 校园社区 -->
+    <section class="grid" aria-label="首页三栏内容">
+
+      <article class="panel">
+        <h2>🧭 应用中心（百宝箱）</h2>
+        <div class="sub" id="home-app-sub">学生自制小工具集散地</div>
+        <a class="more" href="app-center.html">全部 ›</a>
+
+        <div class="cats">
+          <div class="cat on">热门</div>
+          <div class="cat">企微导航</div>
+          <div class="cat">学习</div>
+          <div class="cat">生活</div>
+        </div>
+
+        <div class="paths" id="home-apps">
+          <div class="empty-state">正在加载…</div>
+        </div>
+      </article>
+
+      <article class="panel">
+        <h2>📚 真题库</h2>
+        <div class="sub" id="home-exam-sub">一届帮一届 · 支持就内容提问</div>
+        <a class="more" href="exam-lib.html">全部 ›</a>
+
+        <div class="exams" id="home-exams">
+          <div class="empty-state">正在加载…</div>
+        </div>
+      </article>
+
+      <article class="panel">
+        <h2>💬 校园社区</h2>
+        <div class="sub" id="home-post-sub">二手 · 失物 · 学习 · 拼车</div>
+        <a class="more" href="community.html">进入 ›</a>
+
+        <div class="posts" id="home-posts">
+          <div class="empty-state">正在加载…</div>
+        </div>
+      </article>
+
+    </section>
+
+    <aside class="notice" id="home-notice">📢 新学期真题已开放上传；登录后即可上传与下载。</aside>
+  </main>
+
+  <!-- ===== 页脚 ===== -->
+  <footer>
+    <span>关于我们</span>
+    <span>意见反馈</span>
+    <!-- 管理入口：指向管理后台的独立登录页 -->
+    <a href="admin-login.html">管理入口</a>
+    <span>© 2026 校内网 2.0 · 学生自建</span>
+  </footer>
+
+  <script type="module" src="assets/js/pages/home.js"></script>
+</body>
+</html>

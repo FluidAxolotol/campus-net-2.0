@@ -1,0 +1,33 @@
+# ============================================================
+# systemd 托管 Express
+# 安装：
+#   sudo cp deploy/systemd/campus-api.service /etc/systemd/system/
+#   sudo systemctl daemon-reload
+#   sudo systemctl enable --now campus-api
+# 查看日志：journalctl -u campus-api -f
+# ============================================================
+
+[Unit]
+Description=Campus Net 2.0 Express API
+After=network.target mysql.service
+Wants=mysql.service
+
+[Service]
+Type=simple
+User=campus2
+Group=campus2
+WorkingDirectory=/srv/campus2.0/current/server
+EnvironmentFile=/srv/campus2.0/.env
+ExecStart=/usr/bin/node src/server.js
+Restart=always
+RestartSec=3
+
+# 安全加固：只允许写上传目录与日志目录
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=full
+ProtectHome=true
+ReadWritePaths=/srv/campus2.0/shared/uploads /srv/campus2.0/logs
+
+[Install]
+WantedBy=multi-user.target

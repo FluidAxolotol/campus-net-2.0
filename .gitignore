@@ -1,0 +1,29 @@
+# 依赖
+node_modules/
+server/node_modules/
+
+# 环境变量与密钥（绝不进仓库）
+.env
+server/.env
+server/.env.test
+*.pem
+*.key
+
+# 上传文件与测试文件
+server/uploads/*
+!server/uploads/.gitkeep
+server/test/uploads/
+
+# 构建、发布与备份产物
+dist/
+backups/
+*.tar.gz
+*.sql.gz
+
+# 日志与系统文件
+*.log
+.DS_Store
+Thumbs.db
+
+# 冒烟测试截图
+server/screenshots/

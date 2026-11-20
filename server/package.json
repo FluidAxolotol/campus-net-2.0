@@ -1,0 +1,37 @@
+{
+  "name": "campus-net-2.0-server",
+  "version": "1.0.0",
+  "private": true,
+  "description": "校内网 2.0：Express + MySQL 全栈课程项目",
+  "type": "module",
+  "engines": {
+    "node": ">=24"
+  },
+  "scripts": {
+    "start": "node src/server.js",
+    "dev": "node --watch src/server.js",
+    "migrate": "node scripts/migrate.js",
+    "seed": "node scripts/seed.js",
+    "seed:admin": "node scripts/seed-admin.js",
+    "dev:totp": "node scripts/dev-totp.js",
+    "test:unit": "node --test test/unit/crypto.test.js test/unit/serializers.test.js",
+    "test:integration": "cross-env NODE_ENV=test DB_NAME=campus2_test DB_PORT=3308 RATE_LIMIT_DISABLED=1 USE_X_ACCEL=false UPLOAD_DIR=./test/uploads node --test --test-concurrency=1 test/integration/auth.test.js test/integration/security.test.js test/integration/exams.test.js",
+    "test": "npm run test:unit && npm run test:integration",
+    "smoke": "node scripts/smoke-frontend.mjs"
+  },
+  "dependencies": {
+    "cookie-parser": "^1.4.7",
+    "dotenv": "^16.4.7",
+    "express": "^5.1.0",
+    "express-session": "^1.18.1",
+    "multer": "^2.0.2",
+    "mysql2": "^3.14.3",
+    "qrcode": "^1.5.4",
+    "zod": "^3.25.76"
+  },
+  "devDependencies": {
+    "cross-env": "^7.0.3",
+    "puppeteer-core": "^25.18.1",
+    "supertest": "^7.1.4"
+  }
+}
